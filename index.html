@@ -3,6 +3,21 @@
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1" name="viewport"/>
+    <meta http-equiv="Content-Security-Policy" 
+          content="default-src 'self'; 
+                   script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; 
+                   style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; 
+                   font-src 'self' https://fonts.gstatic.com; 
+                   img-src 'self' data: https:; 
+                   connect-src 'self'; 
+                   frame-ancestors 'none'; 
+                   base-uri 'self'; 
+                   form-action 'self' https://forms.gle; 
+                   object-src 'none';">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+    <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=()">
     <title>MinePack</title>
     <link rel="icon" href="icon.jpg" type="image/png">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"/>
@@ -16,7 +31,7 @@
             --glass-border: rgba(255, 255, 255, 0.15);
             --button-bg: rgba(255, 255, 255, 0.1);
             --button-hover: rgba(255, 255, 255, 0.2);
-            --accent-color: #73889f
+            --accent-color: #73889f;
             --accent-hover: #384758;
             --success-color: #729669;
             --success-hover: #394237;
@@ -38,7 +53,6 @@
             position: relative;
         }
 
-        /* Background elements */
         .background-container {
             position: fixed;
             top: 0;
@@ -140,7 +154,6 @@
             100% { transform: translateX(-100px); }
         }
 
-        /* Floating particles background */
         .particles {
             position: fixed;
             top: 0;
@@ -526,7 +539,6 @@
             opacity: 0;
         }
 
-        /* Modal Styles */
         .modal {
             display: none;
             position: fixed;
@@ -612,7 +624,6 @@
             transform: translateY(-2px);
         }
 
-        /* Request Addons Button Styles */
         .request-addons-container {
             display: flex;
             justify-content: center;
@@ -647,7 +658,6 @@
             font-size: 1.1em;
         }
 
-        /* Addon Detail Modal - FULL SCREEN */
         .addon-detail-modal {
             display: none;
             position: fixed;
@@ -949,7 +959,6 @@
             transform: scale(1.1);
         }
 
-        /* Credit Screen Styles */
         .credit-screen {
             display: none;
             position: fixed;
@@ -1014,53 +1023,42 @@
             .grid-container {
                 grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             }
-            
-            
             .request-addons-button {
                 padding: 10px 20px;
                 font-size: 0.9em;
             }
-            
             .addon-header {
                 flex-direction: column;
                 text-align: center;
                 padding: 20px;
             }
-            
             .addon-icon {
                 margin-right: 0;
                 margin-bottom: 20px;
                 width: 150px;
                 height: 150px;
             }
-            
             .addon-title {
                 font-size: 1.8em;
             }
-            
             .addon-actions {
                 justify-content: center;
             }
-            
             .action-button {
                 padding: 12px 18px;
                 font-size: 1em;
             }
-            
             .gallery-nav {
                 width: 50px;
                 height: 50px;
                 font-size: 1.5em;
             }
-            
             .gallery-nav.prev {
                 left: 15px;
             }
-            
             .gallery-nav.next {
                 right: 15px;
             }
-            
             .close-detail-button {
                 top: 15px;
                 right: 15px;
@@ -1068,21 +1066,18 @@
                 height: 50px;
                 font-size: 1.5em;
             }
-            
             .sun {
                 width: 70px;
                 height: 70px;
                 top: 30px;
                 right: 30px;
             }
-            
             .moon {
                 width: 60px;
                 height: 60px;
                 bottom: 30px;
                 left: 30px;
             }
-            
             .cloud-1, .cloud-2, .cloud-3, .cloud-4, .cloud-5 {
                 width: 80px;
                 height: 40px;
@@ -1091,7 +1086,6 @@
     </style>
 </head>
 <body>
-  
     <div class="background-container">
         <div class="sun"></div>
         <div class="moon"></div>
@@ -1130,7 +1124,6 @@
         </div>
     </header>
     
-    <!-- Request Addons Button -->
     <div class="request-addons-container">
         <button id="requestAddonsButton" class="request-addons-button">
             <i class="fas fa-plus-circle"></i> Request Addons
@@ -1139,17 +1132,15 @@
     
     <main>
         <div class="grid-container" id="itemContainer">
-            <!-- Items will be loaded here -->
         </div>
     </main>
     
-    <!-- Credit Screen -->
     <div id="creditScreen" class="credit-screen">
         <div class="credit-content">
             <h2 class="credit-title">Copyright & Hak Cipta</h2>
             <p class="credit-text">
                 Saya adalah pengembang dan pembuat konten yang bersemangat dalam menciptakan pengalaman Minecraft yang menarik. 
-                        Dengan dedikasi untuk komunitas Minecraft, saya berusaha menyediakan konten berkualitas tinggi untuk para pemain.
+                Dengan dedikasi untuk komunitas Minecraft, saya berusaha menyediakan konten berkualitas tinggi untuk para pemain.
             </p>
             <div class="credit-username">
                 <i class="fas fa-user"></i> @bloxaryn.id
@@ -1164,7 +1155,6 @@
         </div>
     </div>
     
-    <!-- Addon Detail Modal -->
     <div id="addonDetailModal" class="addon-detail-modal">
         <button class="close-detail-button" id="closeDetailModal">
             <i class="fas fa-times"></i>
@@ -1203,13 +1193,11 @@
                 <div class="sidebar-content">
                     <div id="filesContent" class="tab-content active">
                         <div class="file-list">
-                            <!-- File items will be loaded here -->
                         </div>
                     </div>
                     <div id="galleryContent" class="tab-content">
                         <div class="gallery-container">
                             <div class="gallery-slider" id="gallerySlider">
-                                <!-- Gallery slides will be loaded here -->
                             </div>
                             <button class="gallery-nav prev" id="galleryPrev">
                                 <i class="fas fa-chevron-left"></i>
@@ -1224,7 +1212,6 @@
         </div>
     </div>
     
-    <!-- Addon Request Modal -->
     <div id="addonRequestModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -1274,19 +1261,71 @@
     <script src="addons.js"></script>
 
     <script>
-        // Konfigurasi
         const ADDON_REQUEST_FORM_URL = 'https://forms.gle/WLEQgrEQiqRYuqUo7';
         const WHATSAPP_CHANNEL_URL = 'https://whatsapp.com/channel/0029VbBJaB46RGJIkJ874X3d';
-
-        // Inisialisasi aplikasi
+        
+        function sanitizeInput(input) {
+            if (typeof input !== 'string') return '';
+            return input
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#x27;')
+                .replace(/\//g, '&#x2F;')
+                .substring(0, 500);
+        }
+        
+        function isValidURL(url) {
+            try {
+                const urlObj = new URL(url);
+                const allowedPrefixes = [
+                    'https://forms.gle/WsM7vfjGTUpX9ef87',
+                    'https://forms.gle/WLEQgrEQiqRYuqUo7',
+                    'https://whatsapp.com/channel/0029VbBJaB46RGJIkJ874X3d'
+                ];
+                
+                return allowedPrefixes.some(prefix => 
+                    url.toLowerCase().startsWith(prefix.toLowerCase()) ||
+                    urlObj.origin === new URL(prefix).origin
+                );
+            } catch {
+                return false;
+            }
+        }
+        
+        function safeJSONParse(str) {
+            if (typeof str !== 'string' || str.length > 10000) return null;
+            try {
+                const parsed = JSON.parse(str);
+                if (parsed.title && parsed.category && parsed.image) {
+                    return {
+                        title: sanitizeInput(parsed.title),
+                        category: parsed.category,
+                        image: parsed.image,
+                        rating: Number(parsed.rating) || 0,
+                        downloads: parsed.downloads || '0',
+                        link: parsed.link || '#',
+                        description: sanitizeInput(parsed.description || '')
+                    };
+                }
+            } catch {
+                return null;
+            }
+            return null;
+        }
+        
+        let requestCount = 0;
+        let lastRequestTime = 0;
+        const REQUEST_LIMIT = 5;
+        const REQUEST_WINDOW = 60000;
+        
         document.addEventListener('DOMContentLoaded', () => {
             createStars();
             createParticles();
             loadItems();
             setupEventListeners();
         });
-
-        // Fungsi untuk membuat latar bintang
+        
         function createStars() {
             const container = document.getElementById('stars');
             const frag = document.createDocumentFragment();
@@ -1302,8 +1341,7 @@
             }
             container.appendChild(frag);
         }
-
-        // Fungsi untuk membuat partikel yang mengambang
+        
         function createParticles() {
             const container = document.getElementById('particles');
             const frag = document.createDocumentFragment();
@@ -1320,16 +1358,13 @@
             }
             container.appendChild(frag);
         }
-
-        // Fungsi untuk memuat item ke grid
+        
         function loadItems() {
             const container = document.getElementById('itemContainer');
             container.innerHTML = '<div class="loading"><i class="fas fa-cube fa-spin"></i> Loading items...</div>';
             
             setTimeout(() => {
                 container.innerHTML = '';
-                
-                // Acak urutan item
                 const shuffledItems = [...itemsData].sort(() => Math.random() - 0.5);
                 
                 shuffledItems.forEach(item => {
@@ -1338,8 +1373,7 @@
                 });
             }, 800);
         }
-
-        // Fungsi untuk membuat elemen item
+        
         function createItemElement(item) {
             const categoryNames = {
                 maps: "World",
@@ -1349,7 +1383,7 @@
                 skins: "Skin",
                 modrinth: "Mod"
             };
-
+            
             const categoryIcons = {
                 maps: "fas fa-globe",
                 addons: "fas fa-puzzle-piece",
@@ -1358,11 +1392,19 @@
                 skins: "fas fa-tshirt",
                 modrinth: "fas fa-cube"
             };
-
+            
             const itemDiv = document.createElement('div');
             itemDiv.className = 'item';
             itemDiv.dataset.category = item.category;
-            itemDiv.dataset.item = JSON.stringify(item);
+            itemDiv.dataset.item = JSON.stringify({
+                title: sanitizeInput(item.title),
+                category: item.category,
+                image: item.image,
+                rating: item.rating,
+                downloads: item.downloads,
+                link: item.link,
+                description: item.description || ''
+            });
             
             const title = document.createElement('h2');
             title.textContent = item.title;
@@ -1378,12 +1420,10 @@
             img.src = item.image;
             img.alt = item.title;
             
-            // Ikon kategori di pojok kanan atas
             const categoryIcon = document.createElement('div');
             categoryIcon.className = 'item-category-icon';
             categoryIcon.innerHTML = `<i class="${categoryIcons[item.category]}"></i>`;
             
-            // Ikon hover di tengah gambar
             const hoverIcon = document.createElement('div');
             hoverIcon.className = 'item-hover-icon';
             hoverIcon.innerHTML = '<i class="fas fa-info-circle"></i>';
@@ -1412,20 +1452,16 @@
             
             return itemDiv;
         }
-
-        // Fungsi untuk mengatur event listener
+        
         function setupEventListeners() {
-            // Pencarian
-            let searchTimeout;
             document.getElementById('searchInput').addEventListener('input', e => {
-                const q = e.target.value.toLowerCase();
-                clearTimeout(searchTimeout);
-                searchTimeout = setTimeout(() => {
+                e.target.value = sanitizeInput(e.target.value);
+                clearTimeout(window.searchTimeout);
+                window.searchTimeout = setTimeout(() => {
                     filterItems();
                 }, 200);
             });
-
-            // Filter kategori
+            
             document.querySelectorAll('.category-buttons button').forEach(btn => {
                 btn.addEventListener('click', () => {
                     document.querySelectorAll('.category-buttons button').forEach(b => b.classList.remove('active'));
@@ -1433,92 +1469,84 @@
                     filterItems();
                 });
             });
-
-            // Kirim permintaan
+            
             document.getElementById('sendButton').addEventListener('click', sendRequest);
-
-            // Request Addons Button - PERBAIKAN: Selalu arahkan ke form yang sama
+            
             document.getElementById('requestAddonsButton').addEventListener('click', () => {
                 window.open(ADDON_REQUEST_FORM_URL, '_blank');
             });
-
-            // Modal events
+            
             document.getElementById('closeModal').addEventListener('click', () => {
                 document.getElementById('addonRequestModal').style.display = 'none';
             });
-
+            
             document.getElementById('addonRequestForm').addEventListener('submit', handleAddonRequest);
-
-            // Addon Detail Modal Events
+            
             document.querySelectorAll('.sidebar-tab').forEach(tab => {
                 tab.addEventListener('click', () => {
                     document.querySelectorAll('.sidebar-tab').forEach(t => t.classList.remove('active'));
                     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                    
                     tab.classList.add('active');
                     document.getElementById(tab.dataset.tab + 'Content').classList.add('active');
                 });
             });
-
-            // Gallery Navigation
+            
             document.getElementById('galleryPrev').addEventListener('click', () => {
                 navigateGallery('prev');
             });
-
+            
             document.getElementById('galleryNext').addEventListener('click', () => {
                 navigateGallery('next');
             });
-
-            // Close addon detail modal
+            
             document.getElementById('closeDetailModal').addEventListener('click', closeAddonDetail);
-
-            // Addon action buttons
+            
             document.getElementById('detailDownload').addEventListener('click', () => {
                 const currentAddon = document.getElementById('addonDetailModal').dataset.currentAddon;
                 if (currentAddon) {
                     const addon = JSON.parse(currentAddon);
-                    window.open(addon.link, '_blank');
+                    if (addon.link && addon.link.startsWith('http')) {
+                        window.open(addon.link, '_blank');
+                    }
                 }
             });
-
+            
             document.getElementById('detailRequest').addEventListener('click', () => {
                 window.open(ADDON_REQUEST_FORM_URL, '_blank');
             });
-
+            
             document.getElementById('detailWhatsapp').addEventListener('click', () => {
                 window.open(WHATSAPP_CHANNEL_URL, '_blank');
             });
-
-            // Item click events
+            
             document.addEventListener('click', (e) => {
                 const item = e.target.closest('.item');
                 if (item) {
-                    const itemData = JSON.parse(item.dataset.item);
-                    showAddonDetail(itemData);
+                    const itemData = safeJSONParse(item.dataset.item);
+                    if (itemData) {
+                        showAddonDetail(itemData);
+                    }
                 }
             });
-
-            // File download events
+            
             document.addEventListener('click', (e) => {
                 if (e.target.closest('.file-download')) {
                     const fileItem = e.target.closest('.file-item');
                     const downloadBtn = fileItem.querySelector('.file-download');
                     const link = downloadBtn.dataset.link;
-                    if (link) {
+                    if (link && link.startsWith('http')) {
                         window.open(link, '_blank');
                     }
                 }
             });
-
-            // Credit and Social Media Links
+            
             document.getElementById('creditLink').addEventListener('click', showCreditScreen);
             document.getElementById('socialMediaLink').addEventListener('click', toggleSocialMedia);
             document.getElementById('closeCreditScreen').addEventListener('click', closeCreditScreen);
         }
-
-        // Fungsi untuk memfilter item berdasarkan pencarian dan kategori
+        
         function filterItems() {
-            const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+            const searchQuery = sanitizeInput(document.getElementById('searchInput').value.toLowerCase());
             const activeFilter = document.querySelector('.category-buttons button.active').dataset.filter;
             
             document.querySelectorAll('.item').forEach(item => {
@@ -1532,19 +1560,27 @@
             });
         }
         
-        // Fungsi untuk mengirim permintaan
         async function sendRequest() {
+            const now = Date.now();
+            if (now - lastRequestTime < REQUEST_WINDOW && requestCount >= REQUEST_LIMIT) {
+                showNotification('Too many requests. Please wait 1 minute.', 'error');
+                return;
+            }
+            
+            if (now - lastRequestTime >= REQUEST_WINDOW) {
+                requestCount = 0;
+            }
+            
             const inp = document.getElementById('linkInput');
             const url = inp.value.trim();
-            const prefix = 'https://forms.gle/WsM7vfjGTUpX9ef87';
             
             if (!url) {
                 showNotification('Please enter a URL', 'error');
                 return;
             }
             
-            if (!url.startsWith(prefix)) {
-                showNotification(`Valid links must start with: ${prefix}`, 'error');
+            if (!isValidURL(url)) {
+                showNotification('URL tidak valid. Hanya link Google Forms dan WhatsApp Channel yang diizinkan.', 'error');
                 return;
             }
             
@@ -1553,13 +1589,18 @@
                 btn.disabled = true;
                 btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
                 
-                const res = await fetch(DISCORD_WEBHOOK_URL, {
-                    method: 'POST',
-                    headers: {'Content-Type':'application/json'},
-                    body: JSON.stringify({content:`Request: ${url}`})
-                });
+                if (typeof DISCORD_WEBHOOK_URL !== 'undefined') {
+                    const res = await fetch(DISCORD_WEBHOOK_URL, {
+                        method: 'POST',
+                        headers: {'Content-Type':'application/json'},
+                        body: JSON.stringify({content:`Request: ${url}`})
+                    });
+                    
+                    if (!res.ok) throw new Error();
+                }
                 
-                if (!res.ok) throw new Error();
+                requestCount++;
+                lastRequestTime = now;
                 
                 showNotification('Request sent successfully!', 'success');
                 inp.value = '';
@@ -1570,8 +1611,7 @@
                 btn.innerHTML = '<i class="fas fa-paper-plane"></i>';
             }
         }
-
-        // Fungsi untuk menampilkan notifikasi
+        
         function showNotification(message, type = 'info') {
             const notification = document.getElementById('notification');
             notification.textContent = message;
@@ -1586,33 +1626,37 @@
                 icon = 'fas fa-check-circle';
             }
             
-            notification.innerHTML = `<i class="${icon}"></i> ${message}`;
+            notification.innerHTML = `<i class="${icon}"></i> ${sanitizeInput(message)}`;
             notification.classList.add('show');
             
             setTimeout(() => {
                 notification.classList.remove('show');
             }, 3000);
         }
-
-        // Addon Request Functions
+        
         function handleAddonRequest(e) {
             e.preventDefault();
             
-            const addonName = document.getElementById('addonName').value;
-            const addonDescription = document.getElementById('addonDescription').value;
+            const addonName = sanitizeInput(document.getElementById('addonName').value);
+            const addonDescription = sanitizeInput(document.getElementById('addonDescription').value);
             const addonLink = document.getElementById('addonLink').value;
-            const userName = localStorage.getItem('userName');
-            const userEmail = localStorage.getItem('userEmail');
             
-            // Kirim request ke Discord webhook
-            sendAddonRequestToDiscord(addonName, addonDescription, addonLink, userName, userEmail);
+            if (addonLink && !isValidURL(addonLink)) {
+                showNotification('Invalid URL format', 'error');
+                return;
+            }
             
-            // Reset form dan tutup modal
+            if (typeof sendAddonRequestToDiscord === 'function') {
+                const userName = localStorage.getItem('userName');
+                const userEmail = localStorage.getItem('userEmail');
+                sendAddonRequestToDiscord(addonName, addonDescription, addonLink, userName, userEmail);
+            }
+            
             document.getElementById('addonRequestForm').reset();
             document.getElementById('addonRequestModal').style.display = 'none';
+            showNotification('Request submitted successfully!', 'success');
         }
-
-        // Addon Detail Functions
+        
         function showAddonDetail(addon) {
             const modal = document.getElementById('addonDetailModal');
             const categoryNames = {
@@ -1623,15 +1667,13 @@
                 skins: "Skin",
                 modrinth: "Mod"
             };
-
-            // Set data modal
+            
             modal.dataset.currentAddon = JSON.stringify(addon);
             document.getElementById('detailIcon').src = addon.image;
             document.getElementById('detailTitle').textContent = addon.title;
             document.getElementById('detailSubtitle').textContent = `${categoryNames[addon.category] || "Item"} • ${addon.rating} ★ • ${typeof addon.downloads === 'string' ? addon.downloads : addon.downloads.toLocaleString()} downloads`;
             document.getElementById('detailDescription').textContent = addon.description || "No description available.";
-
-            // Load files
+            
             const fileList = document.querySelector('.file-list');
             fileList.innerHTML = '';
             
@@ -1644,10 +1686,10 @@
                             <i class="fas fa-file-archive"></i>
                         </div>
                         <div class="file-info">
-                            <div class="file-name">${file.name}</div>
-                            <div class="file-size">${file.size}</div>
+                            <div class="file-name">${sanitizeInput(file.name)}</div>
+                            <div class="file-size">${sanitizeInput(file.size)}</div>
                         </div>
-                        <button class="file-download" data-link="${addon.link}">
+                        <button class="file-download" data-link="${addon.link.startsWith('http') ? addon.link : '#'}">
                             <i class="fas fa-download"></i> Download
                         </button>
                     `;
@@ -1656,8 +1698,7 @@
             } else {
                 fileList.innerHTML = '<p>No files available.</p>';
             }
-
-            // Load gallery
+            
             const gallerySlider = document.getElementById('gallerySlider');
             gallerySlider.innerHTML = '';
             gallerySlider.style.transform = 'translateX(0)';
@@ -1666,11 +1707,13 @@
                 addon.gallery.forEach(image => {
                     const slide = document.createElement('div');
                     slide.className = 'gallery-slide';
-                    slide.innerHTML = `<img src="${image}" alt="Gallery Image">`;
+                    const img = document.createElement('img');
+                    img.src = image;
+                    img.alt = "Gallery Image";
+                    slide.appendChild(img);
                     gallerySlider.appendChild(slide);
                 });
                 
-                // Show navigation if there's more than one image
                 if (addon.gallery.length > 1) {
                     document.getElementById('galleryPrev').style.display = 'flex';
                     document.getElementById('galleryNext').style.display = 'flex';
@@ -1683,20 +1726,21 @@
                 document.getElementById('galleryPrev').style.display = 'none';
                 document.getElementById('galleryNext').style.display = 'none';
             }
-
-            // Show modal
+            
             modal.style.display = 'block';
-            document.body.style.overflow = 'hidden'; // Prevent scrolling
+            document.body.style.overflow = 'hidden';
         }
-
+        
         function closeAddonDetail() {
             document.getElementById('addonDetailModal').style.display = 'none';
-            document.body.style.overflow = 'auto'; // Re-enable scrolling
+            document.body.style.overflow = 'auto';
         }
-
+        
         function navigateGallery(direction) {
             const slider = document.getElementById('gallerySlider');
             const slides = slider.children;
+            if (slides.length === 0) return;
+            
             const slideWidth = slides[0].offsetWidth;
             const currentPosition = parseInt(slider.style.transform.replace('translateX(', '').replace('px)', '')) || 0;
             
@@ -1715,19 +1759,17 @@
             
             slider.style.transform = `translateX(${newPosition}px)`;
         }
-
-        // Credit Screen Functions
+        
         function showCreditScreen() {
             document.getElementById('creditScreen').style.display = 'flex';
-            document.body.style.overflow = 'hidden'; // Prevent scrolling
+            document.body.style.overflow = 'hidden';
         }
-
+        
         function closeCreditScreen() {
             document.getElementById('creditScreen').style.display = 'none';
-            document.body.style.overflow = 'auto'; // Re-enable scrolling
+            document.body.style.overflow = 'auto';
         }
-
-        // Social Media Functions
+        
         function toggleSocialMedia() {
             const socialMediaIcons = document.getElementById('socialMediaIcons');
             if (socialMediaIcons.style.display === 'none' || socialMediaIcons.style.display === '') {
