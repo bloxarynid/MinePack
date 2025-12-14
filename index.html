@@ -1083,6 +1083,101 @@
                 height: 40px;
             }
         }
+        
+/* ==================== ROUTING STYLES ==================== */
+
+/* Loading state untuk routing */
+.route-loading {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    color: white;
+}
+
+.route-loading.active {
+    display: flex;
+}
+
+.route-loading i {
+    font-size: 3em;
+    margin-bottom: 20px;
+    animation: fa-spin 2s infinite linear;
+}
+
+/* Breadcrumb navigation */
+.breadcrumb {
+    padding: 10px 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    margin: 10px auto;
+    max-width: 1200px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    font-size: 0.9em;
+}
+
+.breadcrumb a {
+    color: var(--accent-color);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.breadcrumb a:hover {
+    color: var(--text-color);
+    text-decoration: underline;
+}
+
+.breadcrumb .separator {
+    color: #666;
+}
+
+/* URL preview */
+.url-preview {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--glass-border);
+    border-radius: 6px;
+    padding: 8px 12px;
+    margin: 10px 0;
+    font-size: 0.85em;
+    word-break: break-all;
+    display: none;
+}
+
+.url-preview.show {
+    display: block;
+}
+
+/* Responsive untuk breadcrumb */
+@media (max-width: 768px) {
+    .breadcrumb {
+        padding: 8px 15px;
+        font-size: 0.8em;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+    
+    .breadcrumb::-webkit-scrollbar {
+        height: 4px;
+    }
+    
+    .breadcrumb::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.1);
+    }
+    
+    .breadcrumb::-webkit-scrollbar-thumb {
+        background: var(--accent-color);
+        border-radius: 2px;
+    }
+}
     </style>
 </head>
 <body>
@@ -1133,6 +1228,23 @@
     <main>
         <div class="grid-container" id="itemContainer">
         </div>
+        <!-- Breadcrumb Navigation -->
+<nav class="breadcrumb" id="breadcrumb">
+    <a href="#" id="homeLink">Home</a>
+    <span class="separator">/</span>
+    <span id="currentPage">All Addons</span>
+</nav>
+
+<!-- URL Preview -->
+<div class="url-preview" id="urlPreview">
+    <small>URL: <span id="currentURL">https://bloxarynid.github.io/MinePack/</span></small>
+</div>
+
+<!-- Loading Overlay -->
+<div class="route-loading" id="routeLoading">
+    <i class="fas fa-spinner"></i>
+    <p>Loading addon...</p>
+</div>
     </main>
     
     <div id="creditScreen" class="credit-screen">
@@ -1779,6 +1891,208 @@
             }
         }
         
+        // Fungsi membuat slug URL-friendly
+function createSlug(text) {
+    return text
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, '')     // Hapus karakter khusus
+        .replace(/\s+/g, '-')             // Ganti spasi dengan dash
+        .replace(/-+/g, '-')              // Hapus dash berlebih
+        .replace(/^-+|-+$/g, '');         // Hapus dash di awal/akhir
+}
+
+// Fungsi untuk navigasi ke halaman addon
+function navigateToAddon(addon) {
+    const slug = createSlug(addon.title);
+    
+    // Update URL dengan hash
+    window.location.hash = `#/addons/${slug}`;
+    
+    // Tampilkan modal detail addon
+    showAddonDetail(addon);
+}
+
+// Fungsi untuk parse hash URL
+function parseHash() {
+    const hash = window.location.hash.substring(1); // Hapus "#"
+    
+    if (!hash) {
+        // Tampilkan halaman utama
+        document.title = "MinePack - Minecraft Addons";
+        return;
+    }
+    
+    const parts = hash.split('/');
+    if (parts[0] === 'addons' && parts[1]) {
+        // Cari addon berdasarkan slug
+        const addonSlug = parts[1];
+        const addon = itemsData.find(item => 
+            createSlug(item.title) === addonSlug
+        );
+        
+        if (addon) {
+            // Update judul browser
+            document.title = `${addon.title} - MinePack`;
+            
+            // Tampilkan modal detail (dengan sedikit delay)
+            setTimeout(() => {
+                if (typeof showAddonDetail === 'function') {
+                    showAddonDetail(addon);
+                }
+            }, 100);
+        } else {
+            // Jika addon tidak ditemukan
+            document.title = "Addon Not Found - MinePack";
+            showNotification('Addon tidak ditemukan!', 'error');
+        }
+    }
+}
+
+// Fungsi untuk membuat URL shareable
+function getShareableURL(addon) {
+    const slug = createSlug(addon.title);
+    return `${window.location.origin}${window.location.pathname}#/addons/${slug}`;
+}
+
+// ==================== INTEGRASI DENGAN KODE ANDA ====================
+
+// 1. Update event listener klik item
+document.addEventListener('click', function(e) {
+    const item = e.target.closest('.item');
+    if (item) {
+        try {
+            const itemData = JSON.parse(item.dataset.item);
+            if (itemData && itemData.title) {
+                // Gunakan routing system
+                navigateToAddon(itemData);
+                e.preventDefault(); // Cegah perilaku default
+            }
+        } catch (error) {
+            console.error('Error parsing item data:', error);
+        }
+    }
+});
+
+// 2. Update fungsi showAddonDetail untuk tambahkan copy URL
+function enhanceAddonDetailModal() {
+    const modal = document.getElementById('addonDetailModal');
+    if (!modal) return;
+    
+    // Tambahkan tombol share
+    const addonActions = document.querySelector('.addon-actions');
+    if (addonActions) {
+        const shareButton = document.createElement('button');
+        shareButton.className = 'action-button share';
+        shareButton.innerHTML = '<i class="fas fa-share-alt"></i> Share';
+        shareButton.onclick = function() {
+            const currentAddon = modal.dataset.currentAddon;
+            if (currentAddon) {
+                try {
+                    const addon = JSON.parse(currentAddon);
+                    const url = getShareableURL(addon);
+                    navigator.clipboard.writeText(url)
+                        .then(() => showNotification('URL disalin!', 'success'))
+                        .catch(() => {
+                            // Fallback untuk browser lama
+                            const tempInput = document.createElement('input');
+                            tempInput.value = url;
+                            document.body.appendChild(tempInput);
+                            tempInput.select();
+                            document.execCommand('copy');
+                            document.body.removeChild(tempInput);
+                            showNotification('URL disalin!', 'success');
+                        });
+                } catch (error) {
+                    showNotification('Gagal menyalin URL', 'error');
+                }
+            }
+        };
+        addonActions.appendChild(shareButton);
+    }
+    
+    // Update fungsi close untuk reset URL
+    const closeBtn = document.getElementById('closeDetailModal');
+    if (closeBtn) {
+        const originalClose = closeBtn.onclick;
+        closeBtn.onclick = function() {
+            // Reset URL ke halaman utama
+            window.location.hash = '';
+            document.title = "MinePack - Minecraft Addons";
+            
+            // Panggil fungsi close asli
+            if (typeof closeAddonDetail === 'function') {
+                closeAddonDetail();
+            }
+        };
+    }
+}
+
+// 3. Setup router saat halaman load
+document.addEventListener('DOMContentLoaded', function() {
+    // Setup hash change listener
+    window.addEventListener('hashchange', parseHash);
+    
+    // Parse hash saat pertama kali load
+    parseHash();
+    
+    // Enhance modal
+    enhanceAddonDetailModal();
+    
+    // Update semua link item dengan data-slug
+    document.querySelectorAll('.item').forEach(item => {
+        try {
+            const itemData = JSON.parse(item.dataset.item);
+            if (itemData && itemData.title) {
+                const slug = createSlug(itemData.title);
+                item.setAttribute('data-slug', slug);
+                item.setAttribute('data-category', itemData.category);
+            }
+        } catch (error) {
+            console.error('Error updating item:', error);
+        }
+    });
+});
+
+// 4. Tambahkan CSS untuk tombol share
+const style = document.createElement('style');
+style.textContent = `
+    .action-button.share {
+        background: linear-gradient(45deg, #6a11cb, #2575fc);
+    }
+    .action-button.share:hover {
+        background: linear-gradient(45deg, #2575fc, #6a11cb);
+    }
+    .item[data-slug] {
+        cursor: pointer;
+    }
+    .item[data-slug]:hover {
+        transform: translateY(-5px);
+        transition: transform 0.3s ease;
+    }
+`;
+document.head.appendChild(style);
+
+// ==================== SITEMAP GENERATOR (Optional) ====================
+
+function generateSitemap() {
+    const baseURL = window.location.origin + window.location.pathname;
+    const sitemap = [
+        `${baseURL}#`,
+        ...itemsData.map(item => `${baseURL}#/addons/${createSlug(item.title)}`)
+    ];
+    
+    console.log('Sitemap URLs:');
+    sitemap.forEach(url => console.log(url));
+    
+    // Anda bisa gunakan ini untuk submit ke Google Search Console
+    return sitemap;
+}
+
+// Generate sitemap saat development
+if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    setTimeout(generateSitemap, 2000);
+}
+        
 if (window !== window.top) {
     window.top.location = window.location;
     
@@ -1853,7 +2167,6 @@ observer.observe(document.body, {
     childList: true,
     subtree: true
 });
-</script>
     </script>
 </body>
 </html>
