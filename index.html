@@ -1264,179 +1264,6 @@
         const ADDON_REQUEST_FORM_URL = 'https://forms.gle/WLEQgrEQiqRYuqUo7';
         const WHATSAPP_CHANNEL_URL = 'https://whatsapp.com/channel/0029VbBJaB46RGJIkJ874X3d';
         
-        // ========== FUNGSI ROUTING URL ==========
-        function setupRouting() {
-            const path = window.location.pathname;
-            const segments = path.split('/').filter(s => s);
-            
-            // Hapus "MinePack" dari segmen jika ada
-            const baseIndex = segments.indexOf('MinePack');
-            if (baseIndex !== -1) {
-                segments.splice(0, baseIndex + 1);
-            }
-            
-            // Routing untuk credit
-            if (segments[0] === 'credit') {
-                showCreditScreen();
-                return;
-            }
-            
-            // Routing untuk kategori allAddons
-            if (segments[0] === 'allAddons') {
-                document.querySelector('.category-buttons button[data-filter="all"]').click();
-                return;
-            }
-            
-            // Routing untuk kategori spesifik
-            const categoryFilters = ['addons', 'maps', 'textures', 'mashups', 'skins'];
-            if (categoryFilters.includes(segments[0])) {
-                const filterMap = {
-                    'addons': 'addons',
-                    'maps': 'maps', 
-                    'textures': 'textures',
-                    'mashups': 'mashups',
-                    'skins': 'skins'
-                };
-                
-                if (segments.length === 1) {
-                    // Hanya kategori
-                    const filterButton = document.querySelector(`.category-buttons button[data-filter="${filterMap[segments[0]]}"]`);
-                    if (filterButton) {
-                        filterButton.click();
-                    }
-                } else if (segments.length >= 2) {
-                    // Kategori + nama addon
-                    const addonName = segments.slice(1).join('-');
-                    loadAndShowAddonBySlug(addonName, filterMap[segments[0]]);
-                }
-                return;
-            }
-            
-            // Routing langsung untuk addon tanpa kategori (backward compatibility)
-            if (segments.length === 1 && segments[0] !== '') {
-                loadAndShowAddonBySlug(segments[0], 'all');
-            }
-        }
-
-        // Fungsi untuk membuat slug dari judul addon
-        function createSlug(title) {
-            if (!title) return '';
-            return title
-                .toLowerCase()
-                .replace(/[^\w\s-]/g, '')
-                .replace(/\s+/g, '-')
-                .replace(/--+/g, '-')
-                .trim();
-        }
-
-        // Fungsi untuk mencari dan menampilkan addon berdasarkan slug
-        function loadAndShowAddonBySlug(slug, category) {
-            console.log('Mencari addon dengan slug:', slug, 'kategori:', category);
-            
-            // Tunggu items selesai dimuat
-            const checkInterval = setInterval(() => {
-                const items = document.querySelectorAll('.item');
-                if (items.length > 0) {
-                    clearInterval(checkInterval);
-                    
-                    let foundAddon = null;
-                    
-                    items.forEach(item => {
-                        try {
-                            const itemData = JSON.parse(item.dataset.item);
-                            const itemSlug = createSlug(itemData.title);
-                            
-                            if (itemSlug === slug) {
-                                if (category === 'all' || itemData.category === category) {
-                                    foundAddon = itemData;
-                                }
-                            }
-                        } catch (e) {
-                            console.error('Error parsing item data:', e);
-                        }
-                    });
-                    
-                    if (foundAddon) {
-                        console.log('Addon ditemukan:', foundAddon.title);
-                        setTimeout(() => {
-                            showAddonDetail(foundAddon);
-                        }, 300);
-                    } else {
-                        console.log('Addon tidak ditemukan, mencari di data global...');
-                        searchAndShowAddon(slug);
-                    }
-                }
-            }, 200);
-        }
-
-        // Fungsi pencarian addon secara global
-        function searchAndShowAddon(slug) {
-            if (!window.itemsData || !Array.isArray(window.itemsData)) {
-                console.error('Data items tidak ditemukan');
-                return;
-            }
-            
-            console.log('Mencari di', window.itemsData.length, 'items...');
-            
-            const allItems = window.itemsData;
-            let foundAddon = null;
-            
-            allItems.forEach(item => {
-                if (item && item.title) {
-                    const itemSlug = createSlug(item.title);
-                    if (itemSlug === slug) {
-                        foundAddon = item;
-                    }
-                }
-            });
-            
-            if (foundAddon) {
-                console.log('Addon ditemukan di data global:', foundAddon.title);
-                setTimeout(() => {
-                    showAddonDetail(foundAddon);
-                }, 300);
-            } else {
-                console.warn('Addon dengan slug', slug, 'tidak ditemukan');
-                showNotification('Addon tidak ditemukan', 'error');
-            }
-        }
-
-        // Update URL ketika membuka detail addon
-        function updateURLForAddon(addon) {
-            if (!addon || !addon.title) return;
-            
-            const slug = createSlug(addon.title);
-            const categoryMap = {
-                'maps': 'maps',
-                'addons': 'addons',
-                'mashups': 'mashups',
-                'textures': 'textures',
-                'skins': 'skins',
-                'modrinth': 'addons'
-            };
-            
-            const category = categoryMap[addon.category] || 'addons';
-            const basePath = window.location.pathname.split('/').slice(0, -1).join('/') || '';
-            const newURL = `${window.location.origin}${basePath}/${category}/${slug}`;
-            
-            window.history.pushState({ addon: addon, type: 'detail' }, addon.title, newURL);
-        }
-
-        // Update URL untuk screen credit
-        function updateURLForCredit() {
-            const basePath = window.location.pathname.split('/').slice(0, -1).join('/') || '';
-            const newURL = `${window.location.origin}${basePath}/credit`;
-            window.history.pushState({ screen: 'credit' }, 'Credit', newURL);
-        }
-
-        // Update URL untuk homepage
-        function updateURLForHome() {
-            const basePath = window.location.pathname.split('/').slice(0, -1).join('/') || '';
-            const newURL = `${window.location.origin}${basePath}/`;
-            window.history.pushState({ screen: 'home' }, 'Home', newURL);
-        }
-        // ========== END FUNGSI ROUTING ==========
-        
         function sanitizeInput(input) {
             if (typeof input !== 'string') return '';
             return input
@@ -1478,9 +1305,7 @@
                         rating: Number(parsed.rating) || 0,
                         downloads: parsed.downloads || '0',
                         link: parsed.link || '#',
-                        description: sanitizeInput(parsed.description || ''),
-                        gallery: parsed.gallery || [],
-                        files: parsed.files || []
+                        description: sanitizeInput(parsed.description || '')
                     };
                 }
             } catch {
@@ -1499,11 +1324,6 @@
             createParticles();
             loadItems();
             setupEventListeners();
-            
-            // Jalankan routing setelah semua selesai dimuat
-            setTimeout(() => {
-                setupRouting();
-            }, 500);
         });
         
         function createStars() {
@@ -1583,9 +1403,7 @@
                 rating: item.rating,
                 downloads: item.downloads,
                 link: item.link,
-                description: item.description || '',
-                gallery: item.gallery || [],
-                files: item.files || []
+                description: item.description || ''
             });
             
             const title = document.createElement('h2');
@@ -1725,11 +1543,6 @@
             document.getElementById('creditLink').addEventListener('click', showCreditScreen);
             document.getElementById('socialMediaLink').addEventListener('click', toggleSocialMedia);
             document.getElementById('closeCreditScreen').addEventListener('click', closeCreditScreen);
-            
-            // Tambahkan event listener untuk handle back/forward browser
-            window.addEventListener('popstate', function(event) {
-                setupRouting();
-            });
         }
         
         function filterItems() {
@@ -1845,12 +1658,10 @@
         }
         
         function showAddonDetail(addon) {
-            console.log('Menampilkan detail addon:', addon);
-            
             const modal = document.getElementById('addonDetailModal');
             const categoryNames = {
                 maps: "World",
-                addons: "Addon", 
+                addons: "Addon",
                 mashups: "Mashup",
                 textures: "Texture",
                 skins: "Skin",
@@ -1863,33 +1674,42 @@
             document.getElementById('detailSubtitle').textContent = `${categoryNames[addon.category] || "Item"} • ${addon.rating} ★ • ${typeof addon.downloads === 'string' ? addon.downloads : addon.downloads.toLocaleString()} downloads`;
             document.getElementById('detailDescription').textContent = addon.description || "No description available.";
             
-            // Update URL di address bar
-            updateURLForAddon(addon);
+            const fileList = document.querySelector('.file-list');
+            fileList.innerHTML = '';
             
-            // Setup gallery
+            if (addon.files && addon.files.length > 0) {
+                addon.files.forEach(file => {
+                    const fileItem = document.createElement('div');
+                    fileItem.className = 'file-item';
+                    fileItem.innerHTML = `
+                        <div class="file-icon">
+                            <i class="fas fa-file-archive"></i>
+                        </div>
+                        <div class="file-info">
+                            <div class="file-name">${sanitizeInput(file.name)}</div>
+                            <div class="file-size">${sanitizeInput(file.size)}</div>
+                        </div>
+                        <button class="file-download" data-link="${addon.link.startsWith('http') ? addon.link : '#'}">
+                            <i class="fas fa-download"></i> Download
+                        </button>
+                    `;
+                    fileList.appendChild(fileItem);
+                });
+            } else {
+                fileList.innerHTML = '<p>No files available.</p>';
+            }
+            
             const gallerySlider = document.getElementById('gallerySlider');
             gallerySlider.innerHTML = '';
             gallerySlider.style.transform = 'translateX(0)';
             
-            // Pastikan gallery berfungsi dengan baik
-            if (addon.gallery && Array.isArray(addon.gallery) && addon.gallery.length > 0) {
-                console.log('Gallery items:', addon.gallery.length);
-                
-                addon.gallery.forEach((image, index) => {
+            if (addon.gallery && addon.gallery.length > 0) {
+                addon.gallery.forEach(image => {
                     const slide = document.createElement('div');
                     slide.className = 'gallery-slide';
                     const img = document.createElement('img');
                     img.src = image;
-                    img.alt = `Gallery Image ${index + 1}`;
-                    img.loading = 'lazy';
-                    img.onerror = function() {
-                        console.error('Gagal memuat gambar:', image);
-                        this.style.display = 'none';
-                        const errorMsg = document.createElement('div');
-                        errorMsg.textContent = 'Image not available';
-                        errorMsg.style.cssText = 'padding: 50px; text-align: center; color: #ccc;';
-                        slide.appendChild(errorMsg);
-                    };
+                    img.alt = "Gallery Image";
                     slide.appendChild(img);
                     gallerySlider.appendChild(slide);
                 });
@@ -1902,65 +1722,9 @@
                     document.getElementById('galleryNext').style.display = 'none';
                 }
             } else {
-                console.log('Tidak ada gallery untuk addon ini');
-                gallerySlider.innerHTML = '<div style="padding: 60px; text-align: center; color: #aaa; font-size: 1.1em;"><i class="fas fa-images" style="font-size: 2em; margin-bottom: 15px; display: block;"></i>No gallery images available</div>';
+                gallerySlider.innerHTML = '<p>No gallery images available.</p>';
                 document.getElementById('galleryPrev').style.display = 'none';
                 document.getElementById('galleryNext').style.display = 'none';
-            }
-            
-            // Setup files
-            const fileList = document.querySelector('.file-list');
-            fileList.innerHTML = '';
-            
-            // Pastikan files berfungsi dengan baik
-            if (addon.files && Array.isArray(addon.files) && addon.files.length > 0) {
-                console.log('File items:', addon.files.length);
-                
-                addon.files.forEach((file, index) => {
-                    const fileItem = document.createElement('div');
-                    fileItem.className = 'file-item';
-                    
-                    // Tentukan icon berdasarkan tipe file
-                    let fileIcon = 'file-archive';
-                    if (file.name && file.name.toLowerCase().includes('.mcpack')) fileIcon = 'file-archive';
-                    else if (file.name && file.name.toLowerCase().includes('.mcaddon')) fileIcon = 'file-archive';
-                    else if (file.name && file.name.toLowerCase().includes('.zip')) fileIcon = 'file-archive';
-                    else if (file.name && file.name.toLowerCase().includes('.rar')) fileIcon = 'file-archive';
-                    else if (file.name && file.name.toLowerCase().includes('.json')) fileIcon = 'file-code';
-                    else if (file.name && file.name.toLowerCase().includes('.txt')) fileIcon = 'file-alt';
-                    
-                    fileItem.innerHTML = `
-                        <div class="file-icon">
-                            <i class="fas fa-${fileIcon}"></i>
-                        </div>
-                        <div class="file-info">
-                            <div class="file-name">${sanitizeInput(file.name || `File ${index + 1}`)}</div>
-                            <div class="file-size">${sanitizeInput(file.size || 'Unknown size')}</div>
-                        </div>
-                        <button class="file-download" data-link="${addon.link && addon.link.startsWith('http') ? addon.link : '#'}">
-                            <i class="fas fa-download"></i> Download
-                        </button>
-                    `;
-                    fileList.appendChild(fileItem);
-                });
-            } else {
-                console.log('Tidak ada files untuk addon ini');
-                // Fallback ke download utama jika tidak ada files
-                const fallbackItem = document.createElement('div');
-                fallbackItem.className = 'file-item';
-                fallbackItem.innerHTML = `
-                    <div class="file-icon">
-                        <i class="fas fa-file-archive"></i>
-                    </div>
-                    <div class="file-info">
-                        <div class="file-name">${sanitizeInput(addon.title)}.mcaddon</div>
-                        <div class="file-size">Main Package</div>
-                    </div>
-                    <button class="file-download" data-link="${addon.link && addon.link.startsWith('http') ? addon.link : '#'}">
-                        <i class="fas fa-download"></i> Download
-                    </button>
-                `;
-                fileList.appendChild(fallbackItem);
             }
             
             modal.style.display = 'block';
@@ -1970,9 +1734,6 @@
         function closeAddonDetail() {
             document.getElementById('addonDetailModal').style.display = 'none';
             document.body.style.overflow = 'auto';
-            
-            // Kembali ke URL homepage
-            updateURLForHome();
         }
         
         function navigateGallery(direction) {
@@ -2002,17 +1763,11 @@
         function showCreditScreen() {
             document.getElementById('creditScreen').style.display = 'flex';
             document.body.style.overflow = 'hidden';
-            
-            // Update URL untuk credit
-            updateURLForCredit();
         }
         
         function closeCreditScreen() {
             document.getElementById('creditScreen').style.display = 'none';
             document.body.style.overflow = 'auto';
-            
-            // Kembali ke URL homepage
-            updateURLForHome();
         }
         
         function toggleSocialMedia() {
@@ -2024,80 +1779,80 @@
             }
         }
         
-        if (window !== window.top) {
-            window.top.location = window.location;
-            
-            document.body.innerHTML = `
-                <div style="
-                    position: fixed;
-                    top: 0;
-                    left: 0;
-                    width: 100%;
-                    height: 100%;
-                    background: #1E3F66;
-                    color: white;
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: center;
-                    align-items: center;
-                    text-align: center;
-                    padding: 20px;
-                    z-index: 9999;
-                ">
-                    <h1 style="font-size: 2em; margin-bottom: 20px;">
-                        <i class="fas fa-exclamation-triangle"></i> Access Denied
-                    </h1>
-                    <p style="font-size: 1.2em; max-width: 600px;">
-                        This website cannot be displayed in an iframe or frame.
-                        Please open it directly in your browser.
-                    </p>
-                    <button onclick="window.open(window.location.href, '_blank')" 
-                            style="
-                                margin-top: 30px;
-                                padding: 12px 24px;
-                                background: #73889f;
-                                border: none;
-                                border-radius: 8px;
-                                color: white;
-                                font-size: 1.1em;
-                                cursor: pointer;
-                            ">
-                        <i class="fas fa-external-link-alt"></i> Open in New Tab
-                    </button>
-                </div>
-            `;
-            
-            throw new Error('Frame busting detected');
-        }
+if (window !== window.top) {
+    window.top.location = window.location;
+    
+    document.body.innerHTML = `
+        <div style="
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #1E3F66;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            z-index: 9999;
+        ">
+            <h1 style="font-size: 2em; margin-bottom: 20px;">
+                <i class="fas fa-exclamation-triangle"></i> Access Denied
+            </h1>
+            <p style="font-size: 1.2em; max-width: 600px;">
+                This website cannot be displayed in an iframe or frame.
+                Please open it directly in your browser.
+            </p>
+            <button onclick="window.open(window.location.href, '_blank')" 
+                    style="
+                        margin-top: 30px;
+                        padding: 12px 24px;
+                        background: #73889f;
+                        border: none;
+                        border-radius: 8px;
+                        color: white;
+                        font-size: 1.1em;
+                        cursor: pointer;
+                    ">
+                <i class="fas fa-external-link-alt"></i> Open in New Tab
+            </button>
+        </div>
+    `;
+    
+    throw new Error('Frame busting detected');
+}
 
-        document.addEventListener('contextmenu', function(e) {
-            const selection = window.getSelection();
-            if (selection.toString().includes('frame') || 
-                selection.toString().includes('iframe')) {
-                e.preventDefault();
-                showNotification('This page cannot be framed.', 'error');
-            }
-        });
+document.addEventListener('contextmenu', function(e) {
+    const selection = window.getSelection();
+    if (selection.toString().includes('frame') || 
+        selection.toString().includes('iframe')) {
+        e.preventDefault();
+        showNotification('This page cannot be framed.', 'error');
+    }
+});
 
-        const observer = new MutationObserver(function(mutations) {
-            mutations.forEach(function(mutation) {
-                if (mutation.addedNodes.length) {
-                    mutation.addedNodes.forEach(function(node) {
-                        if (node.nodeName === 'IFRAME' || 
-                            (node.nodeType === 1 && node.tagName && 
-                             node.tagName.toLowerCase() === 'iframe')) {
-                            node.parentNode.removeChild(node);
-                            console.warn('Attempted iframe injection blocked');
-                        }
-                    });
+const observer = new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutation) {
+        if (mutation.addedNodes.length) {
+            mutation.addedNodes.forEach(function(node) {
+                if (node.nodeName === 'IFRAME' || 
+                    (node.nodeType === 1 && node.tagName && 
+                     node.tagName.toLowerCase() === 'iframe')) {
+                    node.parentNode.removeChild(node);
+                    console.warn('Attempted iframe injection blocked');
                 }
             });
-        });
+        }
+    });
+});
 
-        observer.observe(document.body, {
-            childList: true,
-            subtree: true
-        });
+observer.observe(document.body, {
+    childList: true,
+    subtree: true
+});
     </script>
 </body>
 </html>
