@@ -1083,101 +1083,6 @@
                 height: 40px;
             }
         }
-        
-/* ==================== ROUTING STYLES ==================== */
-
-/* Loading state untuk routing */
-.route-loading {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.8);
-    z-index: 9999;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    color: white;
-}
-
-.route-loading.active {
-    display: flex;
-}
-
-.route-loading i {
-    font-size: 3em;
-    margin-bottom: 20px;
-    animation: fa-spin 2s infinite linear;
-}
-
-/* Breadcrumb navigation */
-.breadcrumb {
-    padding: 10px 20px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 8px;
-    margin: 10px auto;
-    max-width: 1200px;
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    font-size: 0.9em;
-}
-
-.breadcrumb a {
-    color: var(--accent-color);
-    text-decoration: none;
-    transition: color 0.3s ease;
-}
-
-.breadcrumb a:hover {
-    color: var(--text-color);
-    text-decoration: underline;
-}
-
-.breadcrumb .separator {
-    color: #666;
-}
-
-/* URL preview */
-.url-preview {
-    background: rgba(0, 0, 0, 0.3);
-    border: 1px solid var(--glass-border);
-    border-radius: 6px;
-    padding: 8px 12px;
-    margin: 10px 0;
-    font-size: 0.85em;
-    word-break: break-all;
-    display: none;
-}
-
-.url-preview.show {
-    display: block;
-}
-
-/* Responsive untuk breadcrumb */
-@media (max-width: 768px) {
-    .breadcrumb {
-        padding: 8px 15px;
-        font-size: 0.8em;
-        overflow-x: auto;
-        white-space: nowrap;
-    }
-    
-    .breadcrumb::-webkit-scrollbar {
-        height: 4px;
-    }
-    
-    .breadcrumb::-webkit-scrollbar-track {
-        background: rgba(255, 255, 255, 0.1);
-    }
-    
-    .breadcrumb::-webkit-scrollbar-thumb {
-        background: var(--accent-color);
-        border-radius: 2px;
-    }
-}
     </style>
 </head>
 <body>
@@ -1228,23 +1133,6 @@
     <main>
         <div class="grid-container" id="itemContainer">
         </div>
-        <!-- Breadcrumb Navigation -->
-<nav class="breadcrumb" id="breadcrumb">
-    <a href="#" id="homeLink">Home</a>
-    <span class="separator">/</span>
-    <span id="currentPage">All Addons</span>
-</nav>
-
-<!-- URL Preview -->
-<div class="url-preview" id="urlPreview">
-    <small>URL: <span id="currentURL">https://bloxarynid.github.io/MinePack/</span></small>
-</div>
-
-<!-- Loading Overlay -->
-<div class="route-loading" id="routeLoading">
-    <i class="fas fa-spinner"></i>
-    <p>Loading addon...</p>
-</div>
     </main>
     
     <div id="creditScreen" class="credit-screen">
@@ -1376,6 +1264,179 @@
         const ADDON_REQUEST_FORM_URL = 'https://forms.gle/WLEQgrEQiqRYuqUo7';
         const WHATSAPP_CHANNEL_URL = 'https://whatsapp.com/channel/0029VbBJaB46RGJIkJ874X3d';
         
+        // ========== FUNGSI ROUTING URL ==========
+        function setupRouting() {
+            const path = window.location.pathname;
+            const segments = path.split('/').filter(s => s);
+            
+            // Hapus "MinePack" dari segmen jika ada
+            const baseIndex = segments.indexOf('MinePack');
+            if (baseIndex !== -1) {
+                segments.splice(0, baseIndex + 1);
+            }
+            
+            // Routing untuk credit
+            if (segments[0] === 'credit') {
+                showCreditScreen();
+                return;
+            }
+            
+            // Routing untuk kategori allAddons
+            if (segments[0] === 'allAddons') {
+                document.querySelector('.category-buttons button[data-filter="all"]').click();
+                return;
+            }
+            
+            // Routing untuk kategori spesifik
+            const categoryFilters = ['addons', 'maps', 'textures', 'mashups', 'skins'];
+            if (categoryFilters.includes(segments[0])) {
+                const filterMap = {
+                    'addons': 'addons',
+                    'maps': 'maps', 
+                    'textures': 'textures',
+                    'mashups': 'mashups',
+                    'skins': 'skins'
+                };
+                
+                if (segments.length === 1) {
+                    // Hanya kategori
+                    const filterButton = document.querySelector(`.category-buttons button[data-filter="${filterMap[segments[0]]}"]`);
+                    if (filterButton) {
+                        filterButton.click();
+                    }
+                } else if (segments.length >= 2) {
+                    // Kategori + nama addon
+                    const addonName = segments.slice(1).join('-');
+                    loadAndShowAddonBySlug(addonName, filterMap[segments[0]]);
+                }
+                return;
+            }
+            
+            // Routing langsung untuk addon tanpa kategori (backward compatibility)
+            if (segments.length === 1 && segments[0] !== '') {
+                loadAndShowAddonBySlug(segments[0], 'all');
+            }
+        }
+
+        // Fungsi untuk membuat slug dari judul addon
+        function createSlug(title) {
+            if (!title) return '';
+            return title
+                .toLowerCase()
+                .replace(/[^\w\s-]/g, '')
+                .replace(/\s+/g, '-')
+                .replace(/--+/g, '-')
+                .trim();
+        }
+
+        // Fungsi untuk mencari dan menampilkan addon berdasarkan slug
+        function loadAndShowAddonBySlug(slug, category) {
+            console.log('Mencari addon dengan slug:', slug, 'kategori:', category);
+            
+            // Tunggu items selesai dimuat
+            const checkInterval = setInterval(() => {
+                const items = document.querySelectorAll('.item');
+                if (items.length > 0) {
+                    clearInterval(checkInterval);
+                    
+                    let foundAddon = null;
+                    
+                    items.forEach(item => {
+                        try {
+                            const itemData = JSON.parse(item.dataset.item);
+                            const itemSlug = createSlug(itemData.title);
+                            
+                            if (itemSlug === slug) {
+                                if (category === 'all' || itemData.category === category) {
+                                    foundAddon = itemData;
+                                }
+                            }
+                        } catch (e) {
+                            console.error('Error parsing item data:', e);
+                        }
+                    });
+                    
+                    if (foundAddon) {
+                        console.log('Addon ditemukan:', foundAddon.title);
+                        setTimeout(() => {
+                            showAddonDetail(foundAddon);
+                        }, 300);
+                    } else {
+                        console.log('Addon tidak ditemukan, mencari di data global...');
+                        searchAndShowAddon(slug);
+                    }
+                }
+            }, 200);
+        }
+
+        // Fungsi pencarian addon secara global
+        function searchAndShowAddon(slug) {
+            if (!window.itemsData || !Array.isArray(window.itemsData)) {
+                console.error('Data items tidak ditemukan');
+                return;
+            }
+            
+            console.log('Mencari di', window.itemsData.length, 'items...');
+            
+            const allItems = window.itemsData;
+            let foundAddon = null;
+            
+            allItems.forEach(item => {
+                if (item && item.title) {
+                    const itemSlug = createSlug(item.title);
+                    if (itemSlug === slug) {
+                        foundAddon = item;
+                    }
+                }
+            });
+            
+            if (foundAddon) {
+                console.log('Addon ditemukan di data global:', foundAddon.title);
+                setTimeout(() => {
+                    showAddonDetail(foundAddon);
+                }, 300);
+            } else {
+                console.warn('Addon dengan slug', slug, 'tidak ditemukan');
+                showNotification('Addon tidak ditemukan', 'error');
+            }
+        }
+
+        // Update URL ketika membuka detail addon
+        function updateURLForAddon(addon) {
+            if (!addon || !addon.title) return;
+            
+            const slug = createSlug(addon.title);
+            const categoryMap = {
+                'maps': 'maps',
+                'addons': 'addons',
+                'mashups': 'mashups',
+                'textures': 'textures',
+                'skins': 'skins',
+                'modrinth': 'addons'
+            };
+            
+            const category = categoryMap[addon.category] || 'addons';
+            const basePath = window.location.pathname.split('/').slice(0, -1).join('/') || '';
+            const newURL = `${window.location.origin}${basePath}/${category}/${slug}`;
+            
+            window.history.pushState({ addon: addon, type: 'detail' }, addon.title, newURL);
+        }
+
+        // Update URL untuk screen credit
+        function updateURLForCredit() {
+            const basePath = window.location.pathname.split('/').slice(0, -1).join('/') || '';
+            const newURL = `${window.location.origin}${basePath}/credit`;
+            window.history.pushState({ screen: 'credit' }, 'Credit', newURL);
+        }
+
+        // Update URL untuk homepage
+        function updateURLForHome() {
+            const basePath = window.location.pathname.split('/').slice(0, -1).join('/') || '';
+            const newURL = `${window.location.origin}${basePath}/`;
+            window.history.pushState({ screen: 'home' }, 'Home', newURL);
+        }
+        // ========== END FUNGSI ROUTING ==========
+        
         function sanitizeInput(input) {
             if (typeof input !== 'string') return '';
             return input
@@ -1417,7 +1478,9 @@
                         rating: Number(parsed.rating) || 0,
                         downloads: parsed.downloads || '0',
                         link: parsed.link || '#',
-                        description: sanitizeInput(parsed.description || '')
+                        description: sanitizeInput(parsed.description || ''),
+                        gallery: parsed.gallery || [],
+                        files: parsed.files || []
                     };
                 }
             } catch {
@@ -1436,6 +1499,11 @@
             createParticles();
             loadItems();
             setupEventListeners();
+            
+            // Jalankan routing setelah semua selesai dimuat
+            setTimeout(() => {
+                setupRouting();
+            }, 500);
         });
         
         function createStars() {
@@ -1515,7 +1583,9 @@
                 rating: item.rating,
                 downloads: item.downloads,
                 link: item.link,
-                description: item.description || ''
+                description: item.description || '',
+                gallery: item.gallery || [],
+                files: item.files || []
             });
             
             const title = document.createElement('h2');
@@ -1655,6 +1725,11 @@
             document.getElementById('creditLink').addEventListener('click', showCreditScreen);
             document.getElementById('socialMediaLink').addEventListener('click', toggleSocialMedia);
             document.getElementById('closeCreditScreen').addEventListener('click', closeCreditScreen);
+            
+            // Tambahkan event listener untuk handle back/forward browser
+            window.addEventListener('popstate', function(event) {
+                setupRouting();
+            });
         }
         
         function filterItems() {
@@ -1770,10 +1845,12 @@
         }
         
         function showAddonDetail(addon) {
+            console.log('Menampilkan detail addon:', addon);
+            
             const modal = document.getElementById('addonDetailModal');
             const categoryNames = {
                 maps: "World",
-                addons: "Addon",
+                addons: "Addon", 
                 mashups: "Mashup",
                 textures: "Texture",
                 skins: "Skin",
@@ -1786,42 +1863,33 @@
             document.getElementById('detailSubtitle').textContent = `${categoryNames[addon.category] || "Item"} • ${addon.rating} ★ • ${typeof addon.downloads === 'string' ? addon.downloads : addon.downloads.toLocaleString()} downloads`;
             document.getElementById('detailDescription').textContent = addon.description || "No description available.";
             
-            const fileList = document.querySelector('.file-list');
-            fileList.innerHTML = '';
+            // Update URL di address bar
+            updateURLForAddon(addon);
             
-            if (addon.files && addon.files.length > 0) {
-                addon.files.forEach(file => {
-                    const fileItem = document.createElement('div');
-                    fileItem.className = 'file-item';
-                    fileItem.innerHTML = `
-                        <div class="file-icon">
-                            <i class="fas fa-file-archive"></i>
-                        </div>
-                        <div class="file-info">
-                            <div class="file-name">${sanitizeInput(file.name)}</div>
-                            <div class="file-size">${sanitizeInput(file.size)}</div>
-                        </div>
-                        <button class="file-download" data-link="${addon.link.startsWith('http') ? addon.link : '#'}">
-                            <i class="fas fa-download"></i> Download
-                        </button>
-                    `;
-                    fileList.appendChild(fileItem);
-                });
-            } else {
-                fileList.innerHTML = '<p>No files available.</p>';
-            }
-            
+            // Setup gallery
             const gallerySlider = document.getElementById('gallerySlider');
             gallerySlider.innerHTML = '';
             gallerySlider.style.transform = 'translateX(0)';
             
-            if (addon.gallery && addon.gallery.length > 0) {
-                addon.gallery.forEach(image => {
+            // Pastikan gallery berfungsi dengan baik
+            if (addon.gallery && Array.isArray(addon.gallery) && addon.gallery.length > 0) {
+                console.log('Gallery items:', addon.gallery.length);
+                
+                addon.gallery.forEach((image, index) => {
                     const slide = document.createElement('div');
                     slide.className = 'gallery-slide';
                     const img = document.createElement('img');
                     img.src = image;
-                    img.alt = "Gallery Image";
+                    img.alt = `Gallery Image ${index + 1}`;
+                    img.loading = 'lazy';
+                    img.onerror = function() {
+                        console.error('Gagal memuat gambar:', image);
+                        this.style.display = 'none';
+                        const errorMsg = document.createElement('div');
+                        errorMsg.textContent = 'Image not available';
+                        errorMsg.style.cssText = 'padding: 50px; text-align: center; color: #ccc;';
+                        slide.appendChild(errorMsg);
+                    };
                     slide.appendChild(img);
                     gallerySlider.appendChild(slide);
                 });
@@ -1834,9 +1902,65 @@
                     document.getElementById('galleryNext').style.display = 'none';
                 }
             } else {
-                gallerySlider.innerHTML = '<p>No gallery images available.</p>';
+                console.log('Tidak ada gallery untuk addon ini');
+                gallerySlider.innerHTML = '<div style="padding: 60px; text-align: center; color: #aaa; font-size: 1.1em;"><i class="fas fa-images" style="font-size: 2em; margin-bottom: 15px; display: block;"></i>No gallery images available</div>';
                 document.getElementById('galleryPrev').style.display = 'none';
                 document.getElementById('galleryNext').style.display = 'none';
+            }
+            
+            // Setup files
+            const fileList = document.querySelector('.file-list');
+            fileList.innerHTML = '';
+            
+            // Pastikan files berfungsi dengan baik
+            if (addon.files && Array.isArray(addon.files) && addon.files.length > 0) {
+                console.log('File items:', addon.files.length);
+                
+                addon.files.forEach((file, index) => {
+                    const fileItem = document.createElement('div');
+                    fileItem.className = 'file-item';
+                    
+                    // Tentukan icon berdasarkan tipe file
+                    let fileIcon = 'file-archive';
+                    if (file.name && file.name.toLowerCase().includes('.mcpack')) fileIcon = 'file-archive';
+                    else if (file.name && file.name.toLowerCase().includes('.mcaddon')) fileIcon = 'file-archive';
+                    else if (file.name && file.name.toLowerCase().includes('.zip')) fileIcon = 'file-archive';
+                    else if (file.name && file.name.toLowerCase().includes('.rar')) fileIcon = 'file-archive';
+                    else if (file.name && file.name.toLowerCase().includes('.json')) fileIcon = 'file-code';
+                    else if (file.name && file.name.toLowerCase().includes('.txt')) fileIcon = 'file-alt';
+                    
+                    fileItem.innerHTML = `
+                        <div class="file-icon">
+                            <i class="fas fa-${fileIcon}"></i>
+                        </div>
+                        <div class="file-info">
+                            <div class="file-name">${sanitizeInput(file.name || `File ${index + 1}`)}</div>
+                            <div class="file-size">${sanitizeInput(file.size || 'Unknown size')}</div>
+                        </div>
+                        <button class="file-download" data-link="${addon.link && addon.link.startsWith('http') ? addon.link : '#'}">
+                            <i class="fas fa-download"></i> Download
+                        </button>
+                    `;
+                    fileList.appendChild(fileItem);
+                });
+            } else {
+                console.log('Tidak ada files untuk addon ini');
+                // Fallback ke download utama jika tidak ada files
+                const fallbackItem = document.createElement('div');
+                fallbackItem.className = 'file-item';
+                fallbackItem.innerHTML = `
+                    <div class="file-icon">
+                        <i class="fas fa-file-archive"></i>
+                    </div>
+                    <div class="file-info">
+                        <div class="file-name">${sanitizeInput(addon.title)}.mcaddon</div>
+                        <div class="file-size">Main Package</div>
+                    </div>
+                    <button class="file-download" data-link="${addon.link && addon.link.startsWith('http') ? addon.link : '#'}">
+                        <i class="fas fa-download"></i> Download
+                    </button>
+                `;
+                fileList.appendChild(fallbackItem);
             }
             
             modal.style.display = 'block';
@@ -1846,6 +1970,9 @@
         function closeAddonDetail() {
             document.getElementById('addonDetailModal').style.display = 'none';
             document.body.style.overflow = 'auto';
+            
+            // Kembali ke URL homepage
+            updateURLForHome();
         }
         
         function navigateGallery(direction) {
@@ -1875,11 +2002,17 @@
         function showCreditScreen() {
             document.getElementById('creditScreen').style.display = 'flex';
             document.body.style.overflow = 'hidden';
+            
+            // Update URL untuk credit
+            updateURLForCredit();
         }
         
         function closeCreditScreen() {
             document.getElementById('creditScreen').style.display = 'none';
             document.body.style.overflow = 'auto';
+            
+            // Kembali ke URL homepage
+            updateURLForHome();
         }
         
         function toggleSocialMedia() {
@@ -1891,282 +2024,80 @@
             }
         }
         
-        // Fungsi membuat slug URL-friendly
-function createSlug(text) {
-    return text
-        .toLowerCase()
-        .replace(/[^a-z0-9\s-]/g, '')     // Hapus karakter khusus
-        .replace(/\s+/g, '-')             // Ganti spasi dengan dash
-        .replace(/-+/g, '-')              // Hapus dash berlebih
-        .replace(/^-+|-+$/g, '');         // Hapus dash di awal/akhir
-}
-
-// Fungsi untuk navigasi ke halaman addon
-function navigateToAddon(addon) {
-    const slug = createSlug(addon.title);
-    
-    // Update URL dengan hash
-    window.location.hash = `#/addons/${slug}`;
-    
-    // Tampilkan modal detail addon
-    showAddonDetail(addon);
-}
-
-// Fungsi untuk parse hash URL
-function parseHash() {
-    const hash = window.location.hash.substring(1); // Hapus "#"
-    
-    if (!hash) {
-        // Tampilkan halaman utama
-        document.title = "MinePack - Minecraft Addons";
-        return;
-    }
-    
-    const parts = hash.split('/');
-    if (parts[0] === 'addons' && parts[1]) {
-        // Cari addon berdasarkan slug
-        const addonSlug = parts[1];
-        const addon = itemsData.find(item => 
-            createSlug(item.title) === addonSlug
-        );
-        
-        if (addon) {
-            // Update judul browser
-            document.title = `${addon.title} - MinePack`;
+        if (window !== window.top) {
+            window.top.location = window.location;
             
-            // Tampilkan modal detail (dengan sedikit delay)
-            setTimeout(() => {
-                if (typeof showAddonDetail === 'function') {
-                    showAddonDetail(addon);
-                }
-            }, 100);
-        } else {
-            // Jika addon tidak ditemukan
-            document.title = "Addon Not Found - MinePack";
-            showNotification('Addon tidak ditemukan!', 'error');
-        }
-    }
-}
-
-// Fungsi untuk membuat URL shareable
-function getShareableURL(addon) {
-    const slug = createSlug(addon.title);
-    return `${window.location.origin}${window.location.pathname}#/addons/${slug}`;
-}
-
-// ==================== INTEGRASI DENGAN KODE ANDA ====================
-
-// 1. Update event listener klik item
-document.addEventListener('click', function(e) {
-    const item = e.target.closest('.item');
-    if (item) {
-        try {
-            const itemData = JSON.parse(item.dataset.item);
-            if (itemData && itemData.title) {
-                // Gunakan routing system
-                navigateToAddon(itemData);
-                e.preventDefault(); // Cegah perilaku default
-            }
-        } catch (error) {
-            console.error('Error parsing item data:', error);
-        }
-    }
-});
-
-// 2. Update fungsi showAddonDetail untuk tambahkan copy URL
-function enhanceAddonDetailModal() {
-    const modal = document.getElementById('addonDetailModal');
-    if (!modal) return;
-    
-    // Tambahkan tombol share
-    const addonActions = document.querySelector('.addon-actions');
-    if (addonActions) {
-        const shareButton = document.createElement('button');
-        shareButton.className = 'action-button share';
-        shareButton.innerHTML = '<i class="fas fa-share-alt"></i> Share';
-        shareButton.onclick = function() {
-            const currentAddon = modal.dataset.currentAddon;
-            if (currentAddon) {
-                try {
-                    const addon = JSON.parse(currentAddon);
-                    const url = getShareableURL(addon);
-                    navigator.clipboard.writeText(url)
-                        .then(() => showNotification('URL disalin!', 'success'))
-                        .catch(() => {
-                            // Fallback untuk browser lama
-                            const tempInput = document.createElement('input');
-                            tempInput.value = url;
-                            document.body.appendChild(tempInput);
-                            tempInput.select();
-                            document.execCommand('copy');
-                            document.body.removeChild(tempInput);
-                            showNotification('URL disalin!', 'success');
-                        });
-                } catch (error) {
-                    showNotification('Gagal menyalin URL', 'error');
-                }
-            }
-        };
-        addonActions.appendChild(shareButton);
-    }
-    
-    // Update fungsi close untuk reset URL
-    const closeBtn = document.getElementById('closeDetailModal');
-    if (closeBtn) {
-        const originalClose = closeBtn.onclick;
-        closeBtn.onclick = function() {
-            // Reset URL ke halaman utama
-            window.location.hash = '';
-            document.title = "MinePack - Minecraft Addons";
+            document.body.innerHTML = `
+                <div style="
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: #1E3F66;
+                    color: white;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+                    text-align: center;
+                    padding: 20px;
+                    z-index: 9999;
+                ">
+                    <h1 style="font-size: 2em; margin-bottom: 20px;">
+                        <i class="fas fa-exclamation-triangle"></i> Access Denied
+                    </h1>
+                    <p style="font-size: 1.2em; max-width: 600px;">
+                        This website cannot be displayed in an iframe or frame.
+                        Please open it directly in your browser.
+                    </p>
+                    <button onclick="window.open(window.location.href, '_blank')" 
+                            style="
+                                margin-top: 30px;
+                                padding: 12px 24px;
+                                background: #73889f;
+                                border: none;
+                                border-radius: 8px;
+                                color: white;
+                                font-size: 1.1em;
+                                cursor: pointer;
+                            ">
+                        <i class="fas fa-external-link-alt"></i> Open in New Tab
+                    </button>
+                </div>
+            `;
             
-            // Panggil fungsi close asli
-            if (typeof closeAddonDetail === 'function') {
-                closeAddonDetail();
-            }
-        };
-    }
-}
-
-// 3. Setup router saat halaman load
-document.addEventListener('DOMContentLoaded', function() {
-    // Setup hash change listener
-    window.addEventListener('hashchange', parseHash);
-    
-    // Parse hash saat pertama kali load
-    parseHash();
-    
-    // Enhance modal
-    enhanceAddonDetailModal();
-    
-    // Update semua link item dengan data-slug
-    document.querySelectorAll('.item').forEach(item => {
-        try {
-            const itemData = JSON.parse(item.dataset.item);
-            if (itemData && itemData.title) {
-                const slug = createSlug(itemData.title);
-                item.setAttribute('data-slug', slug);
-                item.setAttribute('data-category', itemData.category);
-            }
-        } catch (error) {
-            console.error('Error updating item:', error);
+            throw new Error('Frame busting detected');
         }
-    });
-});
 
-// 4. Tambahkan CSS untuk tombol share
-const style = document.createElement('style');
-style.textContent = `
-    .action-button.share {
-        background: linear-gradient(45deg, #6a11cb, #2575fc);
-    }
-    .action-button.share:hover {
-        background: linear-gradient(45deg, #2575fc, #6a11cb);
-    }
-    .item[data-slug] {
-        cursor: pointer;
-    }
-    .item[data-slug]:hover {
-        transform: translateY(-5px);
-        transition: transform 0.3s ease;
-    }
-`;
-document.head.appendChild(style);
+        document.addEventListener('contextmenu', function(e) {
+            const selection = window.getSelection();
+            if (selection.toString().includes('frame') || 
+                selection.toString().includes('iframe')) {
+                e.preventDefault();
+                showNotification('This page cannot be framed.', 'error');
+            }
+        });
 
-// ==================== SITEMAP GENERATOR (Optional) ====================
-
-function generateSitemap() {
-    const baseURL = window.location.origin + window.location.pathname;
-    const sitemap = [
-        `${baseURL}#`,
-        ...itemsData.map(item => `${baseURL}#/addons/${createSlug(item.title)}`)
-    ];
-    
-    console.log('Sitemap URLs:');
-    sitemap.forEach(url => console.log(url));
-    
-    // Anda bisa gunakan ini untuk submit ke Google Search Console
-    return sitemap;
-}
-
-// Generate sitemap saat development
-if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-    setTimeout(generateSitemap, 2000);
-}
-        
-if (window !== window.top) {
-    window.top.location = window.location;
-    
-    document.body.innerHTML = `
-        <div style="
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #1E3F66;
-            color: white;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 20px;
-            z-index: 9999;
-        ">
-            <h1 style="font-size: 2em; margin-bottom: 20px;">
-                <i class="fas fa-exclamation-triangle"></i> Access Denied
-            </h1>
-            <p style="font-size: 1.2em; max-width: 600px;">
-                This website cannot be displayed in an iframe or frame.
-                Please open it directly in your browser.
-            </p>
-            <button onclick="window.open(window.location.href, '_blank')" 
-                    style="
-                        margin-top: 30px;
-                        padding: 12px 24px;
-                        background: #73889f;
-                        border: none;
-                        border-radius: 8px;
-                        color: white;
-                        font-size: 1.1em;
-                        cursor: pointer;
-                    ">
-                <i class="fas fa-external-link-alt"></i> Open in New Tab
-            </button>
-        </div>
-    `;
-    
-    throw new Error('Frame busting detected');
-}
-
-document.addEventListener('contextmenu', function(e) {
-    const selection = window.getSelection();
-    if (selection.toString().includes('frame') || 
-        selection.toString().includes('iframe')) {
-        e.preventDefault();
-        showNotification('This page cannot be framed.', 'error');
-    }
-});
-
-const observer = new MutationObserver(function(mutations) {
-    mutations.forEach(function(mutation) {
-        if (mutation.addedNodes.length) {
-            mutation.addedNodes.forEach(function(node) {
-                if (node.nodeName === 'IFRAME' || 
-                    (node.nodeType === 1 && node.tagName && 
-                     node.tagName.toLowerCase() === 'iframe')) {
-                    node.parentNode.removeChild(node);
-                    console.warn('Attempted iframe injection blocked');
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.addedNodes.length) {
+                    mutation.addedNodes.forEach(function(node) {
+                        if (node.nodeName === 'IFRAME' || 
+                            (node.nodeType === 1 && node.tagName && 
+                             node.tagName.toLowerCase() === 'iframe')) {
+                            node.parentNode.removeChild(node);
+                            console.warn('Attempted iframe injection blocked');
+                        }
+                    });
                 }
             });
-        }
-    });
-});
+        });
 
-observer.observe(document.body, {
-    childList: true,
-    subtree: true
-});
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
     </script>
 </body>
 </html>
