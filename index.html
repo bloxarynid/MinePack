@@ -821,17 +821,20 @@
         .gallery-slider {
             display: flex;
             transition: transform 0.5s ease;
+            gap: 5px; /* Jarak antar gambar Gallery */
+            padding: 0 5px; /* agar gamnar tidak menempel di tepi */
         }
 
         .gallery-slide {
-            min-width: 100%;
+            min-width: calc(100% - 5px); /* Kurangi dengan jarak gap */
+            margin: 0 2.5px; /* Atau gunakan margin untuk kontrol lebih baik */
             display: flex;
             justify-content: center;
             align-items: center;
         }
 
         .gallery-slide img {
-            max-width: 100%;
+            max-width: calc(100% - 5px); /* Pastikan gambar tidak menempel */
             max-height: 600px;
             border-radius: 12px;
             box-shadow: 0 8px 25px rgba(0,0,0,0.5);
@@ -1305,7 +1308,9 @@
                         rating: Number(parsed.rating) || 0,
                         downloads: parsed.downloads || '0',
                         link: parsed.link || '#',
-                        description: sanitizeInput(parsed.description || '')
+                        description: sanitizeInput(parsed.description || ''),
+                        files: parsed.files || [],
+                        gallery: parsed.gallery || []
                     };
                 }
             } catch {
@@ -1403,7 +1408,9 @@
                 rating: item.rating,
                 downloads: item.downloads,
                 link: item.link,
-                description: item.description || ''
+                description: item.description || '',
+                files: item.files || [],
+                gallery: item.gallery || []
             });
             
             const title = document.createElement('h2');
@@ -1532,10 +1539,17 @@
             document.addEventListener('click', (e) => {
                 if (e.target.closest('.file-download')) {
                     const fileItem = e.target.closest('.file-item');
-                    const downloadBtn = fileItem.querySelector('.file-download');
-                    const link = downloadBtn.dataset.link;
-                    if (link && link.startsWith('http')) {
-                        window.open(link, '_blank');
+                    const currentAddon = document.getElementById('addonDetailModal').dataset.currentAddon;
+                    
+                    if (currentAddon) {
+                        const addon = JSON.parse(currentAddon);
+                        if (addon.link && addon.link.startsWith('http')) {
+                            window.open(addon.link, '_blank');
+                        } else {
+                            showNotification('Download link tidak tersedia', 'error');
+                        }
+                    } else {
+                        showNotification('Klik tombol Download utama untuk mengunduh', 'info');
                     }
                 }
             });
@@ -1677,17 +1691,47 @@
             const fileList = document.querySelector('.file-list');
             fileList.innerHTML = '';
             
+            // TAMPILKAN FILES dari data addon yang ada
             if (addon.files && addon.files.length > 0) {
                 addon.files.forEach(file => {
                     const fileItem = document.createElement('div');
                     fileItem.className = 'file-item';
+                    
+                    // Tentukan icon berdasarkan tipe file atau kategori addon
+                    let fileIcon = 'file';
+                    let fileName = file.name || '';
+                    let fileSize = file.size || '';
+                    
+                    // Tambahkan ekstensi jika belum ada
+                    if (!fileName.includes('.')) {
+                        const category = addon.category;
+                        if (category === 'maps') {
+                            fileName += '.mcworld';
+                        } else if (category === 'addons' || category === 'mashups' || category === 'textures' || category === 'skins') {
+                            fileName += '.mcpack';
+                        }
+                    }
+                    
+                    // Tentukan icon berdasarkan ekstensi file
+                    if (fileName.toLowerCase().endsWith('.mcworld')) {
+                        fileIcon = 'globe';
+                    } else if (fileName.toLowerCase().endsWith('.mcpack') || fileName.toLowerCase().endsWith('.zip')) {
+                        fileIcon = 'file-archive';
+                    } else if (fileName.toLowerCase().endsWith('.txt') || fileName.toLowerCase().endsWith('.md')) {
+                        fileIcon = 'file-alt';
+                    } else if (fileName.toLowerCase().endsWith('.pdf')) {
+                        fileIcon = 'file-pdf';
+                    } else if (fileName.toLowerCase().endsWith('.jpg') || fileName.toLowerCase().endsWith('.png') || fileName.toLowerCase().endsWith('.jpeg')) {
+                        fileIcon = 'file-image';
+                    }
+                    
                     fileItem.innerHTML = `
                         <div class="file-icon">
-                            <i class="fas fa-file-archive"></i>
+                            <i class="fas fa-${fileIcon}"></i>
                         </div>
                         <div class="file-info">
-                            <div class="file-name">${sanitizeInput(file.name)}</div>
-                            <div class="file-size">${sanitizeInput(file.size)}</div>
+                            <div class="file-name">${sanitizeInput(fileName)}</div>
+                            <div class="file-size">${sanitizeInput(fileSize)}</div>
                         </div>
                         <button class="file-download" data-link="${addon.link.startsWith('http') ? addon.link : '#'}">
                             <i class="fas fa-download"></i> Download
@@ -1696,24 +1740,35 @@
                     fileList.appendChild(fileItem);
                 });
             } else {
-                fileList.innerHTML = '<p>No files available.</p>';
+                // Jika tidak ada files, tampilkan pesan
+                const noFiles = document.createElement('div');
+                noFiles.className = 'file-item';
+                noFiles.style.justifyContent = 'center';
+                noFiles.style.background = 'transparent';
+                noFiles.innerHTML = '<p>No files available for this addon.</p>';
+                fileList.appendChild(noFiles);
             }
             
             const gallerySlider = document.getElementById('gallerySlider');
             gallerySlider.innerHTML = '';
             gallerySlider.style.transform = 'translateX(0)';
             
+            // TAMPILKAN GALLERY dari data addon yang ada
             if (addon.gallery && addon.gallery.length > 0) {
-                addon.gallery.forEach(image => {
+                addon.gallery.forEach((image, index) => {
                     const slide = document.createElement('div');
                     slide.className = 'gallery-slide';
                     const img = document.createElement('img');
                     img.src = image;
-                    img.alt = "Gallery Image";
+                    img.alt = `Gallery Image ${index + 1}`;
+                    img.onerror = function() {
+                        this.src = 'https://via.placeholder.com/800x450/2c3e50/ecf0f1?text=Image+Not+Available';
+                    };
                     slide.appendChild(img);
                     gallerySlider.appendChild(slide);
                 });
                 
+                // Tampilkan navigasi jika ada lebih dari 1 gambar
                 if (addon.gallery.length > 1) {
                     document.getElementById('galleryPrev').style.display = 'flex';
                     document.getElementById('galleryNext').style.display = 'flex';
@@ -1722,7 +1777,18 @@
                     document.getElementById('galleryNext').style.display = 'none';
                 }
             } else {
-                gallerySlider.innerHTML = '<p>No gallery images available.</p>';
+                // Jika tidak ada gallery, gunakan gambar utama sebagai fallback
+                const slide = document.createElement('div');
+                slide.className = 'gallery-slide';
+                const img = document.createElement('img');
+                img.src = addon.image;
+                img.alt = "Main Image";
+                img.onerror = function() {
+                    this.src = 'https://via.placeholder.com/800x450/2c3e50/ecf0f1?text=No+Gallery+Available';
+                };
+                slide.appendChild(img);
+                gallerySlider.appendChild(slide);
+                
                 document.getElementById('galleryPrev').style.display = 'none';
                 document.getElementById('galleryNext').style.display = 'none';
             }
@@ -1779,80 +1845,80 @@
             }
         }
         
-if (window !== window.top) {
-    window.top.location = window.location;
-    
-    document.body.innerHTML = `
-        <div style="
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #1E3F66;
-            color: white;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 20px;
-            z-index: 9999;
-        ">
-            <h1 style="font-size: 2em; margin-bottom: 20px;">
-                <i class="fas fa-exclamation-triangle"></i> Access Denied
-            </h1>
-            <p style="font-size: 1.2em; max-width: 600px;">
-                This website cannot be displayed in an iframe or frame.
-                Please open it directly in your browser.
-            </p>
-            <button onclick="window.open(window.location.href, '_blank')" 
-                    style="
-                        margin-top: 30px;
-                        padding: 12px 24px;
-                        background: #73889f;
-                        border: none;
-                        border-radius: 8px;
-                        color: white;
-                        font-size: 1.1em;
-                        cursor: pointer;
-                    ">
-                <i class="fas fa-external-link-alt"></i> Open in New Tab
-            </button>
-        </div>
-    `;
-    
-    throw new Error('Frame busting detected');
-}
-
-document.addEventListener('contextmenu', function(e) {
-    const selection = window.getSelection();
-    if (selection.toString().includes('frame') || 
-        selection.toString().includes('iframe')) {
-        e.preventDefault();
-        showNotification('This page cannot be framed.', 'error');
-    }
-});
-
-const observer = new MutationObserver(function(mutations) {
-    mutations.forEach(function(mutation) {
-        if (mutation.addedNodes.length) {
-            mutation.addedNodes.forEach(function(node) {
-                if (node.nodeName === 'IFRAME' || 
-                    (node.nodeType === 1 && node.tagName && 
-                     node.tagName.toLowerCase() === 'iframe')) {
-                    node.parentNode.removeChild(node);
-                    console.warn('Attempted iframe injection blocked');
+        if (window !== window.top) {
+            window.top.location = window.location;
+            
+            document.body.innerHTML = `
+                <div style="
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: #1E3F66;
+                    color: white;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+                    text-align: center;
+                    padding: 20px;
+                    z-index: 9999;
+                ">
+                    <h1 style="font-size: 2em; margin-bottom: 20px;">
+                        <i class="fas fa-exclamation-triangle"></i> Access Denied
+                    </h1>
+                    <p style="font-size: 1.2em; max-width: 600px;">
+                        This website cannot be displayed in an iframe or frame.
+                        Please open it directly in your browser.
+                    </p>
+                    <button onclick="window.open(window.location.href, '_blank')" 
+                            style="
+                                margin-top: 30px;
+                                padding: 12px 24px;
+                                background: #73889f;
+                                border: none;
+                                border-radius: 8px;
+                                color: white;
+                                font-size: 1.1em;
+                                cursor: pointer;
+                            ">
+                        <i class="fas fa-external-link-alt"></i> Open in New Tab
+                    </button>
+                </div>
+            `;
+            
+            throw new Error('Frame busting detected');
+        }
+        
+        document.addEventListener('contextmenu', function(e) {
+            const selection = window.getSelection();
+            if (selection.toString().includes('frame') || 
+                selection.toString().includes('iframe')) {
+                e.preventDefault();
+                showNotification('This page cannot be framed.', 'error');
+            }
+        });
+        
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.addedNodes.length) {
+                    mutation.addedNodes.forEach(function(node) {
+                        if (node.nodeName === 'IFRAME' || 
+                            (node.nodeType === 1 && node.tagName && 
+                             node.tagName.toLowerCase() === 'iframe')) {
+                            node.parentNode.removeChild(node);
+                            console.warn('Attempted iframe injection blocked');
+                        }
+                    });
                 }
             });
-        }
-    });
-});
-
-observer.observe(document.body, {
-    childList: true,
-    subtree: true
-});
+        });
+        
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
     </script>
 </body>
 </html>
