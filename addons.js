@@ -1688,6 +1688,25 @@
         ]
     },
     {
+        title: "Disechant V6.2",
+        category: "addons",
+        image: "https://media.forgecdn.net/attachments/871/180/mcpedl.png",
+        link: "https://www.mediafire.com/file/ixes4nkf9bghs35/DisEnchanter_Addon_1.21_STABLE_V6.2.mcaddon/file",
+        rating: 4.4,
+        downloads: 156.696,
+        description: "This addon adds a new block to the game called the Disenchanter Table. The Disenchanter Table is unique block that will add a whole new disenchanting mechanic in the game."
+        files: [
+            { 
+              name: "Disenchanter V6.2",
+              size: "92.78 KB"
+            }
+            ],
+            
+          gallery: [
+            "https://media.forgecdn.net/attachments/871/180/mcpedl.png"
+            ]
+    },
+    {
         title: "Stay True v1.4",
         category: "textures",
         image: "https://media.forgecdn.net/attachments/336/117/2021-thumb.png",
