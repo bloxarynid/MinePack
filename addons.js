@@ -1694,7 +1694,7 @@
         link: "https://www.mediafire.com/file/ixes4nkf9bghs35/DisEnchanter_Addon_1.21_STABLE_V6.2.mcaddon/file",
         rating: 4.4,
         downloads: 156.696,
-        description: "This addon adds a new block to the game called the Disenchanter Table. The Disenchanter Table is unique block that will add a whole new disenchanting mechanic in the game."
+        description: "This addon adds a new block to the game called the Disenchanter Table. The Disenchanter Table is unique block that will add a whole new disenchanting mechanic in the game.",
         files: [
             { 
               name: "Disenchanter V6.2",
