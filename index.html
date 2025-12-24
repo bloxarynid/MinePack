@@ -3,17 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1" name="viewport"/>
-    <meta http-equiv="Content-Security-Policy" 
-      content="default-src 'self'; 
-               script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://kit.fontawesome.com https://use.fontawesome.com; 
-               style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com https://kit.fontawesome.com; 
-               font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com https://kit.fontawesome.com https://use.fontawesome.com data:; 
-               img-src 'self' data: https:; 
-               connect-src 'self'; 
-               frame-ancestors 'none'; 
-               base-uri 'self'; 
-               form-action 'self' https://forms.gle; 
-               object-src 'none';">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://kit.fontawesome.com https://use.fontawesome.com https://publisher.linkvertise.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com https://kit.fontawesome.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com https://kit.fontawesome.com https://use.fontawesome.com data:; img-src 'self' data: https:; connect-src 'self' https://publisher.linkvertise.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self' https://forms.gle; object-src 'none';">
     <meta http-equiv="X-Frame-Options" content="DENY">
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
@@ -1089,6 +1079,8 @@
     </style>
 </head>
 <body>
+  <script src="https://publisher.linkvertise.com/cdn/linkvertise.js"></script><script>linkvertise(2538234, {whitelist: ["www.mediafire.com","gofile.io"], blacklist: []});</script>
+    
     <div class="background-container">
         <div class="sun"></div>
         <div class="moon"></div>
@@ -1264,6 +1256,7 @@
     <script src="addons.js"></script>
 
     <script>
+    
         const ADDON_REQUEST_FORM_URL = 'https://forms.gle/WLEQgrEQiqRYuqUo7';
         const WHATSAPP_CHANNEL_URL = 'https://whatsapp.com/channel/0029VbBJaB46RGJIkJ874X3d';
         
@@ -1507,16 +1500,13 @@
             });
             
             document.getElementById('closeDetailModal').addEventListener('click', closeAddonDetail);
-            
             document.getElementById('detailDownload').addEventListener('click', () => {
-                const currentAddon = document.getElementById('addonDetailModal').dataset.currentAddon;
-                if (currentAddon) {
-                    const addon = JSON.parse(currentAddon);
-                    if (addon.link && addon.link.startsWith('http')) {
-                        window.open(addon.link, '_blank');
-                    }
-                }
-            });
+    const currentAddon = document.getElementById('addonDetailModal').dataset.currentAddon;
+    if (currentAddon) {
+        const addon = JSON.parse(currentAddon);
+        handleDownload(addon.link);
+    }
+});
             
             document.getElementById('detailRequest').addEventListener('click', () => {
                 window.open(ADDON_REQUEST_FORM_URL, '_blank');
@@ -1535,24 +1525,19 @@
                     }
                 }
             });
-            
             document.addEventListener('click', (e) => {
-                if (e.target.closest('.file-download')) {
-                    const fileItem = e.target.closest('.file-item');
-                    const currentAddon = document.getElementById('addonDetailModal').dataset.currentAddon;
-                    
-                    if (currentAddon) {
-                        const addon = JSON.parse(currentAddon);
-                        if (addon.link && addon.link.startsWith('http')) {
-                            window.open(addon.link, '_blank');
-                        } else {
-                            showNotification('Download link tidak tersedia', 'error');
-                        }
-                    } else {
-                        showNotification('Klik tombol Download utama untuk mengunduh', 'info');
-                    }
-                }
-            });
+    if (e.target.closest('.file-download')) {
+        e.preventDefault();
+        const currentAddon = document.getElementById('addonDetailModal').dataset.currentAddon;
+        
+        if (currentAddon) {
+            const addon = JSON.parse(currentAddon);
+            handleDownload(addon.link);
+        } else {
+            showNotification('Klik tombol Download utama untuk mengunduh', 'info');
+        }
+    }
+});
             
             document.getElementById('creditLink').addEventListener('click', showCreditScreen);
             document.getElementById('socialMediaLink').addEventListener('click', toggleSocialMedia);
@@ -1625,6 +1610,40 @@
                 btn.innerHTML = '<i class="fas fa-paper-plane"></i>';
             }
         }
+        
+        // Tambahkan fungsi ini untuk menangani download melalui Linkvertise
+function handleDownload(link) {
+    if (!link || !link.startsWith('http')) {
+        showNotification('Download link tidak tersedia', 'error');
+        return;
+    }
+    
+    try {
+        const url = new URL(link);
+        const hostname = url.hostname;
+        const linkvertiseWhitelist = ["www.mediafire.com", "gofile.io"];
+        
+        if (linkvertiseWhitelist.some(domain => hostname.includes(domain))) {
+            // Gunakan Linkvertise
+            if (typeof Linkvertise !== 'undefined' && Linkvertise.redirect) {
+                Linkvertise.redirect(link, {
+                    campaign: 2538234
+                });
+            } else {
+                // Jika Linkvertise belum dimuat, muat dulu
+                showNotification('Loading download...', 'info');
+                window.open(link, '_blank');
+            }
+        } else {
+            // Link langsung tanpa Linkvertise
+            window.open(link, '_blank');
+        }
+    } catch (error) {
+        // Fallback ke link langsung
+        console.error('Download error:', error);
+        window.open(link, '_blank');
+    }
+}
         
         function showNotification(message, type = 'info') {
             const notification = document.getElementById('notification');
