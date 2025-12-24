@@ -3,7 +3,7 @@
                 title: "SweepNSlash v2.0.0",
                 category: "addons",
                 image: "https://i.ytimg.com/vi/lOxddOUnVSI/maxresdefault.jpg",
-                link: "https://www.mediafire.com/file/hmvopflvdlgjd1e/SweepNSlash_v2.3.0.mcaddon/file",
+                link: "https://gofile.io/d/bbb24f0e-4bd5-4aef-8018-de95beff2e54",
                 rating: 4.2,
                 downloads: 5621,
                 description: "A powerful combat addon that adds sweeping attacks and new weapon mechanics to Minecraft. Experience enhanced combat with special abilities and custom animations.",
