@@ -5,11 +5,11 @@
     <meta content="width=device-width, initial-scale=1" name="viewport"/>
     <meta http-equiv="Content-Security-Policy" 
       content="default-src 'self'; 
-               script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://kit.fontawesome.com https://publisher.linkvertise.com https://use.fontawesome.com; 
+               script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://kit.fontawesome.com https://use.fontawesome.com; 
                style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com https://kit.fontawesome.com; 
                font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com https://kit.fontawesome.com https://use.fontawesome.com data:; 
                img-src 'self' data: https:; 
-               connect-src 'self' https://link-to.net; 
+               connect-src 'self'; 
                frame-ancestors 'none'; 
                base-uri 'self'; 
                form-action 'self' https://forms.gle; 
@@ -23,21 +23,6 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;700&amp;display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    
-    <!-- Linkvertise Script -->
-    <script src="https://publisher.linkvertise.com/cdn/linkvertise.js"></script>
-    <script>
-        // Initialize Linkvertise
-        if (typeof Linkvertise !== 'undefined') {
-            Linkvertise.init(2538234, {
-                whitelist: ["mediafire.com", "gofile.io"],
-                blacklist: [],
-                interstitial: true,
-                overlay: true,
-                progress: true
-            });
-        }
-    </script>
     
     <style>
         :root {
@@ -1038,7 +1023,7 @@
             transform: translateY(-2px);
         }
 
-        /* Download Modal Styles */
+        /* Download Modal Styles - BARU */
         .download-modal {
             display: none;
             position: fixed;
@@ -1046,108 +1031,163 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.9);
+            background: rgba(0, 0, 0, 0.85);
             z-index: 1003;
             align-items: center;
             justify-content: center;
+            backdrop-filter: blur(10px);
         }
 
         .download-modal-content {
             background: var(--glass-bg);
             border: 1px solid var(--glass-border);
             border-radius: 12px;
-            width: 90%;
-            max-width: 500px;
             padding: 30px;
-            backdrop-filter: blur(10px);
-            position: relative;
+            width: 90%;
+            max-width: 450px;
+            text-align: center;
+            backdrop-filter: blur(15px);
+            animation: modalFadeIn 0.3s ease-out;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .download-modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
-        .download-modal-title {
-            font-size: 1.4em;
-            font-weight: bold;
+        .download-modal-header i {
+            font-size: 3.5em;
+            color: var(--accent-color);
+            margin-bottom: 15px;
         }
 
-        .download-modal-close {
-            background: none;
-            border: none;
-            color: var(--text-color);
+        .download-modal-header h2 {
             font-size: 1.5em;
-            cursor: pointer;
+            margin-bottom: 10px;
+            word-break: break-word;
+        }
+
+        .download-modal-header p {
+            color: #ccc;
+            font-size: 0.95em;
         }
 
         .download-options {
             display: flex;
             flex-direction: column;
             gap: 15px;
-            margin-top: 20px;
+            margin: 25px 0;
         }
 
         .download-option {
-            background: var(--button-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: 8px;
-            padding: 15px;
             display: flex;
             align-items: center;
-            gap: 15px;
-            cursor: pointer;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            padding: 15px 20px;
             transition: all 0.3s ease;
+            cursor: pointer;
         }
 
         .download-option:hover {
-            background: var(--button-hover);
+            background: rgba(255, 255, 255, 0.15);
             transform: translateY(-2px);
         }
 
-        .download-option-icon {
+        .option-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .option-icon {
             width: 40px;
             height: 40px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 1.3em;
             background: rgba(255, 255, 255, 0.1);
+        }
+
+        .option-text h3 {
+            font-size: 1.1em;
+            margin-bottom: 4px;
+            text-align: left;
+        }
+
+        .option-text span {
+            font-size: 0.85em;
+            color: #aaa;
+            text-align: left;
+            display: block;
+        }
+
+        .option-arrow {
+            color: #aaa;
+            font-size: 1.2em;
+        }
+
+        .download-modal-footer {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .close-download-modal {
+            background: transparent;
+            border: 1px solid var(--glass-border);
             border-radius: 8px;
-            font-size: 1.2em;
+            color: var(--text-color);
+            padding: 12px 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1em;
+            width: 100%;
         }
 
-        .download-option-text {
-            flex: 1;
+        .close-download-modal:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
         }
 
-        .download-option-title {
-            font-weight: 500;
-            margin-bottom: 5px;
-        }
-
-        .download-option-description {
-            font-size: 0.9em;
-            color: #ccc;
-        }
-
-        .download-option-arrow {
-            color: #ccc;
-            font-size: 1.2em;
-        }
-
-        .linkvertise-badge {
-            position: relative;
-        }
-
-        .linkvertise-badge::after {
-            content: "🔗";
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            font-size: 0.8em;
-            opacity: 0.7;
+        /* Media queries untuk download modal */
+        @media (max-width: 768px) {
+            .download-modal-content {
+                padding: 25px 20px;
+                width: 95%;
+            }
+            
+            .download-modal-header i {
+                font-size: 3em;
+            }
+            
+            .download-modal-header h2 {
+                font-size: 1.3em;
+            }
+            
+            .download-option {
+                padding: 12px 15px;
+            }
+            
+            .option-icon {
+                width: 35px;
+                height: 35px;
+                font-size: 1.1em;
+            }
         }
 
         @media (max-width: 768px) {
@@ -1218,7 +1258,6 @@
 </head>
 <body>
 
-    
     <div class="background-container">
         <div class="sun"></div>
         <div class="moon"></div>
@@ -1233,15 +1272,23 @@
     <div class="particles" id="particles"></div>
     <div class="notification" id="notification"></div>
     
-    <!-- Download Options Modal -->
+    <!-- Download Modal -->
     <div id="downloadModal" class="download-modal">
         <div class="download-modal-content">
             <div class="download-modal-header">
-                <div class="download-modal-title" id="downloadModalTitle">Download Options</div>
-                <button class="download-modal-close" id="closeDownloadModal">&times;</button>
+                <i class="fas fa-download"></i>
+                <h2 id="downloadModalTitle">Download</h2>
+                <p id="downloadModalSubtitle">Choose download method</p>
             </div>
+            
             <div class="download-options" id="downloadOptions">
-                <!-- Download options will be inserted here -->
+                <!-- Opsi download akan diisi oleh JavaScript -->
+            </div>
+            
+            <div class="download-modal-footer">
+                <button class="close-download-modal" id="closeDownloadModal">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
             </div>
         </div>
     </div>
@@ -1316,7 +1363,7 @@
                     <p id="detailSubtitle" class="addon-subtitle">Addon Subtitle</p>
                     <div class="addon-actions">
                         <button id="detailDownload" class="action-button download">
-                            <i class="fas fa-download"></i> Download
+                            <i class="fas fa-download"></i> <span id="downloadText">Download</span>
                         </button>
                         <button id="detailRequest" class="action-button">
                             <i class="fas fa-paper-plane"></i> Request Addons
@@ -1404,15 +1451,104 @@
         </div>
         <div><i class="far fa-copyright"></i> @Bloxaryn. 2025</div>
     </footer>
+    
     <script src="addons.js"></script>
     <script>
-
         const ADDON_REQUEST_FORM_URL = 'https://forms.gle/WLEQgrEQiqRYuqUo7';
         const WHATSAPP_CHANNEL_URL = 'https://whatsapp.com/channel/0029VbBJaB46RGJIkJ874X3d';
         
-        // Variabel untuk Linkvertise
-        let currentDownloadItem = null;
-        const LINKVERTISE_CAMPAIGN = 2538234;
+        // Fungsi untuk mendeteksi jenis link
+        function detectLinkType(url) {
+            if (!url || url === '#') return 'others';
+            
+            const lowerUrl = url.toLowerCase();
+            
+            if (lowerUrl.includes('mediafire.com')) {
+                return 'mediafire';
+            } else if (lowerUrl.includes('linkvertise.com')) {
+                return 'linkvertise';
+            } else if (lowerUrl.includes('link-center.net')) {
+                return 'link-center';
+            } else if (lowerUrl.includes('drive.google.com')) {
+                return 'gdrive';
+            } else if (lowerUrl.includes('dropbox.com')) {
+                return 'dropbox';
+            } else if (lowerUrl.includes('mega.nz')) {
+                return 'mega';
+            } else {
+                return 'others';
+            }
+        }
+        
+        // Fungsi untuk mendapatkan domain dari URL
+        function getDomainFromUrl(url) {
+            try {
+                const urlObj = new URL(url);
+                return urlObj.hostname.replace('www.', '');
+            } catch {
+                return null;
+            }
+        }
+        
+        // Fungsi untuk mendapatkan teks tombol berdasarkan jenis link
+        function getDownloadButtonText(linkType) {
+            switch(linkType) {
+                case 'mediafire':
+                    return 'Download via MediaFire';
+                case 'linkvertise':
+                    return 'Download via Linkvertise';
+                case 'link-center':
+                    return 'Download via Linkvertise'
+                case 'gdrive':
+                    return 'Download via Google Drive';
+                case 'dropbox':
+                    return 'Download via Dropbox';
+                case 'mega':
+                    return 'Download via MEGA';
+                default:
+                    return 'Download via Others...';
+            }
+        }
+        
+        // Fungsi untuk mendapatkan ikon berdasarkan jenis link
+        function getLinkIcon(linkType) {
+            switch(linkType) {
+                case 'mediafire':
+                    return 'fab fa-medapps';
+                case 'linkvertise':
+                    return 'fas fa-link';
+                case 'link-center':
+                    return 'fas fa-link';
+                case 'gdrive':
+                    return 'fab fa-google-drive';
+                case 'dropbox':
+                    return 'fab fa-dropbox';
+                case 'mega':
+                    return 'fas fa-cloud';
+                default:
+                    return 'fas fa-external-link-alt';
+            }
+        }
+        
+        // Fungsi untuk mendapatkan deskripsi berdasarkan jenis link
+        function getLinkDescription(linkType) {
+            switch(linkType) {
+                case 'mediafire':
+                    return 'Fast and reliable file hosting';
+                case 'linkvertise':
+                    'Complete a short task to download';
+                case 'link-center':
+                    'Complete a short task to download';
+                case 'gdrive':
+                    return 'Google Cloud storage';
+                case 'dropbox':
+                    return 'Cloud storage service';
+                case 'mega':
+                    return 'Secure cloud storage';
+                default:
+                    return 'External download link';
+            }
+        }
         
         function sanitizeInput(input) {
             if (typeof input !== 'string') return '';
@@ -1655,11 +1791,12 @@
             
             document.getElementById('closeDetailModal').addEventListener('click', closeAddonDetail);
             
+            // Download button di detail modal
             document.getElementById('detailDownload').addEventListener('click', () => {
                 const currentAddon = document.getElementById('addonDetailModal').dataset.currentAddon;
                 if (currentAddon) {
                     const addon = JSON.parse(currentAddon);
-                    showDownloadOptions(addon);
+                    showDownloadModal(addon);
                 }
             });
             
@@ -1671,19 +1808,8 @@
                 window.open(WHATSAPP_CHANNEL_URL, '_blank');
             });
             
-            document.getElementById('closeDownloadModal').addEventListener('click', () => {
-                document.getElementById('downloadModal').style.display = 'none';
-                document.body.style.overflow = 'auto';
-            });
-            
-            document.addEventListener('click', (e) => {
-                if (e.target.closest('.download-option')) {
-                    const option = e.target.closest('.download-option');
-                    const link = option.dataset.link;
-                    const type = option.dataset.type;
-                    handleDownload(link, type);
-                }
-            });
+            // Download modal close button
+            document.getElementById('closeDownloadModal').addEventListener('click', closeDownloadModal);
             
             document.addEventListener('click', (e) => {
                 const item = e.target.closest('.item');
@@ -1695,30 +1821,9 @@
                 }
             });
             
-            document.addEventListener('click', (e) => {
-                if (e.target.closest('.file-download')) {
-                    e.preventDefault();
-                    const currentAddon = document.getElementById('addonDetailModal').dataset.currentAddon;
-                    
-                    if (currentAddon) {
-                        const addon = JSON.parse(currentAddon);
-                        showDownloadOptions(addon);
-                    } else {
-                        showNotification('Klik tombol Download utama untuk mengunduh', 'info');
-                    }
-                }
-            });
-            
             document.getElementById('creditLink').addEventListener('click', showCreditScreen);
             document.getElementById('socialMediaLink').addEventListener('click', toggleSocialMedia);
             document.getElementById('closeCreditScreen').addEventListener('click', closeCreditScreen);
-            
-            document.addEventListener('click', (e) => {
-                if (e.target === document.getElementById('downloadModal')) {
-                    document.getElementById('downloadModal').style.display = 'none';
-                    document.body.style.overflow = 'auto';
-                }
-            });
         }
         
         function filterItems() {
@@ -1765,15 +1870,13 @@
                 btn.disabled = true;
                 btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
                 
-                if (typeof DISCORD_WEBHOOK_URL !== 'undefined') {
-                    const res = await fetch(DISCORD_WEBHOOK_URL, {
-                        method: 'POST',
-                        headers: {'Content-Type':'application/json'},
-                        body: JSON.stringify({content:`Request: ${url}`})
-                    });
-                    
-                    if (!res.ok) throw new Error();
-                }
+                // Simpan request ke localStorage (contoh sederhana)
+                const requests = JSON.parse(localStorage.getItem('addonRequests') || '[]');
+                requests.push({
+                    url: url,
+                    timestamp: new Date().toISOString()
+                });
+                localStorage.setItem('addonRequests', JSON.stringify(requests));
                 
                 requestCount++;
                 lastRequestTime = now;
@@ -1788,115 +1891,121 @@
             }
         }
         
-        // FUNGSI UTAMA: Menampilkan pilihan download dengan Linkvertise
-        function showDownloadOptions(addon) {
-            currentDownloadItem = addon;
+        // FUNGSI UTAMA: Tampilkan modal download
+        function showDownloadModal(addon) {
             const modal = document.getElementById('downloadModal');
             const title = document.getElementById('downloadModalTitle');
+            const subtitle = document.getElementById('downloadModalSubtitle');
             const options = document.getElementById('downloadOptions');
             
-            title.textContent = `Download ${addon.title}`;
+            // Set judul dan subtitle
+            title.textContent = addon.title;
+            
+            const linkType = detectLinkType(addon.link);
+            const buttonText = getDownloadButtonText(linkType);
+            subtitle.textContent = buttonText;
+            
+            // Kosongkan opsi sebelumnya
             options.innerHTML = '';
             
-            // Option 1: Download via Linkvertise (MediaFire/GoFile)
-            const linkvertiseOption = document.createElement('div');
-            linkvertiseOption.className = 'download-option linkvertise-badge';
-            linkvertiseOption.dataset.link = addon.link;
-            linkvertiseOption.dataset.type = 'linkvertise';
-            linkvertiseOption.innerHTML = `
-                <div class="download-option-icon">
-                    <i class="fas fa-external-link-alt"></i>
-                </div>
-                <div class="download-option-text">
-                    <div class="download-option-title">Download via Linkvertise</div>
-                    <div class="download-option-description">Support developer with ads before download</div>
-                </div>
-                <div class="download-option-arrow">
-                    <i class="fas fa-chevron-right"></i>
-                </div>
-            `;
-            options.appendChild(linkvertiseOption);
+            // Buat opsi download utama
+            const mainOption = createDownloadOption(
+                addon.link,
+                linkType,
+                'main'
+            );
+            options.appendChild(mainOption);
             
-            // Option 2: Direct Download (if needed)
-            const directOption = document.createElement('div');
-            directOption.className = 'download-option';
-            directOption.dataset.link = addon.link;
-            directOption.dataset.type = 'direct';
-            directOption.innerHTML = `
-                <div class="download-option-icon">
-                    <i class="fas fa-download"></i>
-                </div>
-                <div class="download-option-text">
-                    <div class="download-option-title">Direct Download</div>
-                    <div class="download-option-description">Download file directly (no ads)</div>
-                </div>
-                <div class="download-option-arrow">
-                    <i class="fas fa-chevron-right"></i>
-                </div>
-            `;
-            options.appendChild(directOption);
+            // Tambahkan opsi alternatif (jika ada)
+            if (addon.alternativeLinks && addon.alternativeLinks.length > 0) {
+                addon.alternativeLinks.forEach(altLink => {
+                    const altLinkType = detectLinkType(altLink.url);
+                    const altOption = createDownloadOption(
+                        altLink.url,
+                        altLinkType,
+                        'alternative',
+                        altLink.name || 'Alternative'
+                    );
+                    options.appendChild(altOption);
+                });
+            }
             
+            // Tampilkan modal
             modal.style.display = 'flex';
             document.body.style.overflow = 'hidden';
         }
         
-        // FUNGSI UTAMA: Menangani download melalui Linkvertise
-        function handleDownload(link, type) {
-            if (!link || !link.startsWith('http')) {
+        // Fungsi untuk membuat elemen opsi download
+        function createDownloadOption(url, linkType, optionType, customName = null) {
+            const option = document.createElement('div');
+            option.className = 'download-option';
+            option.dataset.url = url;
+            
+            const icon = getLinkIcon(linkType);
+            const domain = getDomainFromUrl(url) || 'External Site';
+            const description = getLinkDescription(linkType);
+            
+            option.innerHTML = `
+                <div class="option-info">
+                    <div class="option-icon">
+                        <i class="${icon}"></i>
+                    </div>
+                    <div class="option-text">
+                        <h3>${customName || getDownloadButtonText(linkType)}</h3>
+                        <span>${domain} • ${description}</span>
+                    </div>
+                </div>
+                <div class="option-arrow">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            `;
+            
+            option.addEventListener('click', () => {
+                handleDownload(url);
+                closeDownloadModal();
+            });
+            
+            return option;
+        }
+        
+        // Fungsi untuk menutup modal download
+        function closeDownloadModal() {
+            const modal = document.getElementById('downloadModal');
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+        
+        // Fungsi untuk melakukan download
+        function handleDownload(url) {
+            if (!url || url === '#') {
                 showNotification('Download link tidak tersedia', 'error');
                 return;
             }
             
             try {
-                const url = new URL(link);
-                const hostname = url.hostname;
+                // Buka link di tab baru
+                window.open(url, '_blank');
                 
-                if (type === 'linkvertise') {
-                    // Gunakan Linkvertise untuk download
-                    if (typeof Linkvertise !== 'undefined' && typeof Linkvertise.redirect === 'function') {
-                        // Cek apakah Linkvertise sudah terinisialisasi
-                        Linkvertise.redirect(link, {
-                            campaign: LINKVERTISE_CAMPAIGN,
-                            whitelist: ["mediafire.com", "gofile.io"]
-                        });
-                    } else {
-                        // Fallback ke link langsung jika Linkvertise belum dimuat
-                        showNotification('Opening download link...', 'info');
-                        window.open(link, '_blank');
-                    }
-                } else {
-                    // Direct download
-                    window.open(link, '_blank');
-                }
-                
-                // Update download count
-                if (currentDownloadItem) {
-                    // Simpan di localStorage
-                    const itemKey = `download_${currentDownloadItem.title.replace(/\s+/g, '_')}`;
+                // Update download count (simulasi)
+                const currentAddon = document.getElementById('addonDetailModal').dataset.currentAddon;
+                if (currentAddon) {
+                    const addon = JSON.parse(currentAddon);
+                    const itemKey = `download_${addon.title.replace(/\s+/g, '_')}`;
                     let downloadCount = localStorage.getItem(itemKey) || 0;
                     downloadCount = parseInt(downloadCount) + 1;
                     localStorage.setItem(itemKey, downloadCount);
-                    
-                    // Update tampilan jika perlu
-                    updateDownloadCount(currentDownloadItem.title, downloadCount);
+                    updateDownloadCount(addon.title, downloadCount);
                 }
                 
-                // Tutup modal
-                document.getElementById('downloadModal').style.display = 'none';
-                document.body.style.overflow = 'auto';
-                
-                showNotification('Download started!', 'success');
+                showNotification('Download started! Opening link...', 'success');
                 
             } catch (error) {
                 console.error('Download error:', error);
                 showNotification('Error starting download', 'error');
-                // Fallback ke link langsung
-                window.open(link, '_blank');
             }
         }
         
         function updateDownloadCount(itemTitle, count) {
-            // Update count di semua item dengan judul yang sama
             document.querySelectorAll('.item').forEach(item => {
                 const title = item.querySelector('h2').textContent;
                 if (title === itemTitle) {
@@ -1942,11 +2051,15 @@
                 return;
             }
             
-            if (typeof sendAddonRequestToDiscord === 'function') {
-                const userName = localStorage.getItem('userName');
-                const userEmail = localStorage.getItem('userEmail');
-                sendAddonRequestToDiscord(addonName, addonDescription, addonLink, userName, userEmail);
-            }
+            // Simpan request ke localStorage
+            const addonRequests = JSON.parse(localStorage.getItem('addonRequests') || '[]');
+            addonRequests.push({
+                name: addonName,
+                description: addonDescription,
+                link: addonLink,
+                timestamp: new Date().toISOString()
+            });
+            localStorage.setItem('addonRequests', JSON.stringify(addonRequests));
             
             document.getElementById('addonRequestForm').reset();
             document.getElementById('addonRequestModal').style.display = 'none';
@@ -1969,6 +2082,11 @@
             document.getElementById('detailTitle').textContent = addon.title;
             document.getElementById('detailSubtitle').textContent = `${categoryNames[addon.category] || "Item"} • ${addon.rating} ★ • ${typeof addon.downloads === 'string' ? addon.downloads : addon.downloads.toLocaleString()} downloads`;
             document.getElementById('detailDescription').textContent = addon.description || "No description available.";
+            
+            // Deteksi jenis link dan update teks tombol
+            const linkType = detectLinkType(addon.link);
+            const downloadText = getDownloadButtonText(linkType);
+            document.getElementById('downloadText').textContent = downloadText;
             
             const fileList = document.querySelector('.file-list');
             fileList.innerHTML = '';
@@ -2119,6 +2237,7 @@
             }
         }
         
+        // Frame busting
         if (window !== window.top) {
             window.top.location = window.location;
             
@@ -2165,6 +2284,7 @@
             throw new Error('Frame busting detected');
         }
         
+        // Context menu protection
         document.addEventListener('contextmenu', function(e) {
             const selection = window.getSelection();
             if (selection.toString().includes('frame') || 
@@ -2174,6 +2294,7 @@
             }
         });
         
+        // Mutation observer untuk mencegah iframe injection
         const observer = new MutationObserver(function(mutations) {
             mutations.forEach(function(mutation) {
                 if (mutation.addedNodes.length) {
@@ -2192,20 +2313,6 @@
         observer.observe(document.body, {
             childList: true,
             subtree: true
-        });
-        
-        // Inisialisasi Linkvertise saat halaman selesai load
-        window.addEventListener('load', function() {
-            if (typeof Linkvertise !== 'undefined') {
-                Linkvertise.init(LINKVERTISE_CAMPAIGN, {
-                    whitelist: ["mediafire.com", "gofile.io"],
-                    blacklist: [],
-                    interstitial: true,
-                    overlay: true,
-                    progress: true
-                });
-                console.log('Linkvertise initialized');
-            }
         });
     </script>
 </body>
