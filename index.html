@@ -5,21 +5,13 @@
     <meta content="width=device-width, initial-scale=1" name="viewport"/>
     <meta http-equiv="Content-Security-Policy" 
       content="default-src 'self'; 
-      
                script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://kit.fontawesome.com https://publisher.linkvertise.com https://use.fontawesome.com; 
-               
                style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com https://kit.fontawesome.com; 
-               
                font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com https://kit.fontawesome.com https://use.fontawesome.com data:; 
-               
                img-src 'self' data: https:; 
-               
                connect-src 'self' https://link-to.net; 
-               
                frame-ancestors 'none'; 
-               
                base-uri 'self'; 
-               
                form-action 'self' https://forms.gle; 
                object-src 'none';">
     <meta http-equiv="X-Frame-Options" content="DENY">
@@ -31,6 +23,22 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;700&amp;display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <!-- Linkvertise Script -->
+    <script src="https://publisher.linkvertise.com/cdn/linkvertise.js"></script>
+    <script>
+        // Initialize Linkvertise
+        if (typeof Linkvertise !== 'undefined') {
+            Linkvertise.init(2538234, {
+                whitelist: ["mediafire.com", "gofile.io"],
+                blacklist: [],
+                interstitial: true,
+                overlay: true,
+                progress: true
+            });
+        }
+    </script>
+    
     <style>
         :root {
             --gradient-colors: linear-gradient(270deg, #05121a, #062538, #0b5c86, #105274, #105274, #0d3d5b, #062538, #05121a);
@@ -1030,6 +1038,118 @@
             transform: translateY(-2px);
         }
 
+        /* Download Modal Styles */
+        .download-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1003;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .download-modal-content {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            position: relative;
+        }
+
+        .download-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .download-modal-title {
+            font-size: 1.4em;
+            font-weight: bold;
+        }
+
+        .download-modal-close {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 1.5em;
+            cursor: pointer;
+        }
+
+        .download-options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .download-option {
+            background: var(--button-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .download-option:hover {
+            background: var(--button-hover);
+            transform: translateY(-2px);
+        }
+
+        .download-option-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            font-size: 1.2em;
+        }
+
+        .download-option-text {
+            flex: 1;
+        }
+
+        .download-option-title {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .download-option-description {
+            font-size: 0.9em;
+            color: #ccc;
+        }
+
+        .download-option-arrow {
+            color: #ccc;
+            font-size: 1.2em;
+        }
+
+        .linkvertise-badge {
+            position: relative;
+        }
+
+        .linkvertise-badge::after {
+            content: "🔗";
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            font-size: 0.8em;
+            opacity: 0.7;
+        }
+
         @media (max-width: 768px) {
             .grid-container {
                 grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -1097,14 +1217,7 @@
     </style>
 </head>
 <body>
-    <!-- Script Linkvertise untuk memonetisasi link MediaFire -->
-    <script src="https://publisher.linkvertise.com/cdn/linkvertise.js"></script>
-    <script>
-        linkvertise(2538234, {
-            whitelist: ["www.mediafire.com", "gofile.io"], 
-            blacklist: []
-        });
-    </script>
+
     
     <div class="background-container">
         <div class="sun"></div>
@@ -1119,6 +1232,19 @@
     <div class="stars" id="stars"></div>
     <div class="particles" id="particles"></div>
     <div class="notification" id="notification"></div>
+    
+    <!-- Download Options Modal -->
+    <div id="downloadModal" class="download-modal">
+        <div class="download-modal-content">
+            <div class="download-modal-header">
+                <div class="download-modal-title" id="downloadModalTitle">Download Options</div>
+                <button class="download-modal-close" id="closeDownloadModal">&times;</button>
+            </div>
+            <div class="download-options" id="downloadOptions">
+                <!-- Download options will be inserted here -->
+            </div>
+        </div>
+    </div>
     
     <header>
         <h1><i class="fas fa-cube"></i> MinePack</h1>
@@ -1152,6 +1278,7 @@
     
     <main>
         <div class="grid-container" id="itemContainer">
+            <!-- Items will be loaded here -->
         </div>
     </main>
     
@@ -1277,12 +1404,15 @@
         </div>
         <div><i class="far fa-copyright"></i> @Bloxaryn. 2025</div>
     </footer>
-    
     <script src="addons.js"></script>
-
     <script>
+
         const ADDON_REQUEST_FORM_URL = 'https://forms.gle/WLEQgrEQiqRYuqUo7';
         const WHATSAPP_CHANNEL_URL = 'https://whatsapp.com/channel/0029VbBJaB46RGJIkJ874X3d';
+        
+        // Variabel untuk Linkvertise
+        let currentDownloadItem = null;
+        const LINKVERTISE_CAMPAIGN = 2538234;
         
         function sanitizeInput(input) {
             if (typeof input !== 'string') return '';
@@ -1529,7 +1659,7 @@
                 const currentAddon = document.getElementById('addonDetailModal').dataset.currentAddon;
                 if (currentAddon) {
                     const addon = JSON.parse(currentAddon);
-                    handleDownload(addon.link);
+                    showDownloadOptions(addon);
                 }
             });
             
@@ -1539,6 +1669,20 @@
             
             document.getElementById('detailWhatsapp').addEventListener('click', () => {
                 window.open(WHATSAPP_CHANNEL_URL, '_blank');
+            });
+            
+            document.getElementById('closeDownloadModal').addEventListener('click', () => {
+                document.getElementById('downloadModal').style.display = 'none';
+                document.body.style.overflow = 'auto';
+            });
+            
+            document.addEventListener('click', (e) => {
+                if (e.target.closest('.download-option')) {
+                    const option = e.target.closest('.download-option');
+                    const link = option.dataset.link;
+                    const type = option.dataset.type;
+                    handleDownload(link, type);
+                }
             });
             
             document.addEventListener('click', (e) => {
@@ -1558,7 +1702,7 @@
                     
                     if (currentAddon) {
                         const addon = JSON.parse(currentAddon);
-                        handleDownload(addon.link);
+                        showDownloadOptions(addon);
                     } else {
                         showNotification('Klik tombol Download utama untuk mengunduh', 'info');
                     }
@@ -1568,6 +1712,13 @@
             document.getElementById('creditLink').addEventListener('click', showCreditScreen);
             document.getElementById('socialMediaLink').addEventListener('click', toggleSocialMedia);
             document.getElementById('closeCreditScreen').addEventListener('click', closeCreditScreen);
+            
+            document.addEventListener('click', (e) => {
+                if (e.target === document.getElementById('downloadModal')) {
+                    document.getElementById('downloadModal').style.display = 'none';
+                    document.body.style.overflow = 'auto';
+                }
+            });
         }
         
         function filterItems() {
@@ -1637,8 +1788,60 @@
             }
         }
         
-        // Fungsi untuk menangani download melalui Linkvertise
-        function handleDownload(link) {
+        // FUNGSI UTAMA: Menampilkan pilihan download dengan Linkvertise
+        function showDownloadOptions(addon) {
+            currentDownloadItem = addon;
+            const modal = document.getElementById('downloadModal');
+            const title = document.getElementById('downloadModalTitle');
+            const options = document.getElementById('downloadOptions');
+            
+            title.textContent = `Download ${addon.title}`;
+            options.innerHTML = '';
+            
+            // Option 1: Download via Linkvertise (MediaFire/GoFile)
+            const linkvertiseOption = document.createElement('div');
+            linkvertiseOption.className = 'download-option linkvertise-badge';
+            linkvertiseOption.dataset.link = addon.link;
+            linkvertiseOption.dataset.type = 'linkvertise';
+            linkvertiseOption.innerHTML = `
+                <div class="download-option-icon">
+                    <i class="fas fa-external-link-alt"></i>
+                </div>
+                <div class="download-option-text">
+                    <div class="download-option-title">Download via Linkvertise</div>
+                    <div class="download-option-description">Support developer with ads before download</div>
+                </div>
+                <div class="download-option-arrow">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            `;
+            options.appendChild(linkvertiseOption);
+            
+            // Option 2: Direct Download (if needed)
+            const directOption = document.createElement('div');
+            directOption.className = 'download-option';
+            directOption.dataset.link = addon.link;
+            directOption.dataset.type = 'direct';
+            directOption.innerHTML = `
+                <div class="download-option-icon">
+                    <i class="fas fa-download"></i>
+                </div>
+                <div class="download-option-text">
+                    <div class="download-option-title">Direct Download</div>
+                    <div class="download-option-description">Download file directly (no ads)</div>
+                </div>
+                <div class="download-option-arrow">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            `;
+            options.appendChild(directOption);
+            
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+        
+        // FUNGSI UTAMA: Menangani download melalui Linkvertise
+        function handleDownload(link, type) {
             if (!link || !link.startsWith('http')) {
                 showNotification('Download link tidak tersedia', 'error');
                 return;
@@ -1647,29 +1850,62 @@
             try {
                 const url = new URL(link);
                 const hostname = url.hostname;
-                const linkvertiseWhitelist = ["www.mediafire.com", "gofile.io"];
                 
-                // Cek apakah link dari MediaFire atau GoFile
-                if (linkvertiseWhitelist.some(domain => hostname.includes(domain))) {
-                    // Gunakan Linkvertise untuk link MediaFire/GoFile
-                    if (typeof Linkvertise !== 'undefined' && Linkvertise.redirect) {
+                if (type === 'linkvertise') {
+                    // Gunakan Linkvertise untuk download
+                    if (typeof Linkvertise !== 'undefined' && typeof Linkvertise.redirect === 'function') {
+                        // Cek apakah Linkvertise sudah terinisialisasi
                         Linkvertise.redirect(link, {
-                            campaign: 2538234
+                            campaign: LINKVERTISE_CAMPAIGN,
+                            whitelist: ["mediafire.com", "gofile.io"]
                         });
                     } else {
-                        // Fallback jika Linkvertise belum dimuat
-                        showNotification('Loading download...', 'info');
+                        // Fallback ke link langsung jika Linkvertise belum dimuat
+                        showNotification('Opening download link...', 'info');
                         window.open(link, '_blank');
                     }
                 } else {
-                    // Link langsung untuk domain lain
+                    // Direct download
                     window.open(link, '_blank');
                 }
+                
+                // Update download count
+                if (currentDownloadItem) {
+                    // Simpan di localStorage
+                    const itemKey = `download_${currentDownloadItem.title.replace(/\s+/g, '_')}`;
+                    let downloadCount = localStorage.getItem(itemKey) || 0;
+                    downloadCount = parseInt(downloadCount) + 1;
+                    localStorage.setItem(itemKey, downloadCount);
+                    
+                    // Update tampilan jika perlu
+                    updateDownloadCount(currentDownloadItem.title, downloadCount);
+                }
+                
+                // Tutup modal
+                document.getElementById('downloadModal').style.display = 'none';
+                document.body.style.overflow = 'auto';
+                
+                showNotification('Download started!', 'success');
+                
             } catch (error) {
-                // Fallback ke link langsung jika ada error
                 console.error('Download error:', error);
+                showNotification('Error starting download', 'error');
+                // Fallback ke link langsung
                 window.open(link, '_blank');
             }
+        }
+        
+        function updateDownloadCount(itemTitle, count) {
+            // Update count di semua item dengan judul yang sama
+            document.querySelectorAll('.item').forEach(item => {
+                const title = item.querySelector('h2').textContent;
+                if (title === itemTitle) {
+                    const downloadElement = item.querySelector('.item-downloads');
+                    if (downloadElement) {
+                        downloadElement.innerHTML = `<i class="fas fa-download"></i> ${count}`;
+                    }
+                }
+            });
         }
         
         function showNotification(message, type = 'info') {
@@ -1737,18 +1973,15 @@
             const fileList = document.querySelector('.file-list');
             fileList.innerHTML = '';
             
-            // TAMPILKAN FILES dari data addon yang ada
             if (addon.files && addon.files.length > 0) {
                 addon.files.forEach(file => {
                     const fileItem = document.createElement('div');
                     fileItem.className = 'file-item';
                     
-                    // Tentukan icon berdasarkan tipe file atau kategori addon
                     let fileIcon = 'file';
                     let fileName = file.name || '';
                     let fileSize = file.size || '';
                     
-                    // Tambahkan ekstensi jika belum ada
                     if (!fileName.includes('.')) {
                         const category = addon.category;
                         if (category === 'maps') {
@@ -1758,7 +1991,6 @@
                         }
                     }
                     
-                    // Tentukan icon berdasarkan ekstensi file
                     if (fileName.toLowerCase().endsWith('.mcworld')) {
                         fileIcon = 'globe';
                     } else if (fileName.toLowerCase().endsWith('.mcpack') || fileName.toLowerCase().endsWith('.zip')) {
@@ -1779,14 +2011,13 @@
                             <div class="file-name">${sanitizeInput(fileName)}</div>
                             <div class="file-size">${sanitizeInput(fileSize)}</div>
                         </div>
-                        <button class="file-download" data-link="${addon.link.startsWith('http') ? addon.link : '#'}">
+                        <button class="file-download" data-link="${addon.link}">
                             <i class="fas fa-download"></i> Download
                         </button>
                     `;
                     fileList.appendChild(fileItem);
                 });
             } else {
-                // Jika tidak ada files, tampilkan pesan
                 const noFiles = document.createElement('div');
                 noFiles.className = 'file-item';
                 noFiles.style.justifyContent = 'center';
@@ -1799,7 +2030,6 @@
             gallerySlider.innerHTML = '';
             gallerySlider.style.transform = 'translateX(0)';
             
-            // TAMPILKAN GALLERY dari data addon yang ada
             if (addon.gallery && addon.gallery.length > 0) {
                 addon.gallery.forEach((image, index) => {
                     const slide = document.createElement('div');
@@ -1814,7 +2044,6 @@
                     gallerySlider.appendChild(slide);
                 });
                 
-                // Tampilkan navigasi jika ada lebih dari 1 gambar
                 if (addon.gallery.length > 1) {
                     document.getElementById('galleryPrev').style.display = 'flex';
                     document.getElementById('galleryNext').style.display = 'flex';
@@ -1823,7 +2052,6 @@
                     document.getElementById('galleryNext').style.display = 'none';
                 }
             } else {
-                // Jika tidak ada gallery, gunakan gambar utama sebagai fallback
                 const slide = document.createElement('div');
                 slide.className = 'gallery-slide';
                 const img = document.createElement('img');
@@ -1964,6 +2192,20 @@
         observer.observe(document.body, {
             childList: true,
             subtree: true
+        });
+        
+        // Inisialisasi Linkvertise saat halaman selesai load
+        window.addEventListener('load', function() {
+            if (typeof Linkvertise !== 'undefined') {
+                Linkvertise.init(LINKVERTISE_CAMPAIGN, {
+                    whitelist: ["mediafire.com", "gofile.io"],
+                    blacklist: [],
+                    interstitial: true,
+                    overlay: true,
+                    progress: true
+                });
+                console.log('Linkvertise initialized');
+            }
         });
     </script>
 </body>
