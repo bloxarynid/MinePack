@@ -1258,15 +1258,22 @@
 </head>
     <script src="https://publisher.linkvertise.com/cdn/linkvertise.js"></script>
     <script>
-        linkvertise(2538234, {
-          whitelist: [
-            "mediafire.com/file/",
-            "mediafire.com"
-            ], 
-            
-            blacklist: []
-          });
-    </script>
+      linkvertise(2538234, 
+      {
+        whitelist: [
+          "mediafire.com/file/*",
+          "www.mediafire.com/file/*",
+          "mediafire.com/download/*",
+          "www.mediafire.com/download/*",
+          "gofile.io/d/*"
+        ], 
+        
+        blacklist: [
+          ]
+      }
+  );
+      </script>
+    
 <body>
     <div class="background-container">
         <div class="sun"></div>
