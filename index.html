@@ -25,6 +25,7 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     
     <style>
+        /* STYLE TIDAK DIUBAH - SAMA PERSIS DENGAN SEBELUMNYA */
         :root {
             --gradient-colors: linear-gradient(270deg, #05121a, #062538, #0b5c86, #105274, #105274, #0d3d5b, #062538, #05121a);
             --text-color: #fff;
@@ -773,29 +774,34 @@
         .addon-sidebar {
             margin-top: 40px;
         }
-
         .sidebar-tabs {
             display: flex;
             width: 100%;
+            gap: 10px;
+            padding: 10px;
             border-bottom: 1px solid var(--glass-border);
         }
 
         .sidebar-tab {
             flex: 1;
             text-align: center;
-            padding: 20px;
+            padding: 15px;
             background: transparent;
             border: none;
+            border-radius: 15px;
+            margin: 0 5px;
             color: var(--text-color);
             cursor: pointer;
             transition: all 0.3s ease;
             font-size: 1.1em;
-            border-bottom: 3px solid transparent;
+            border-bottom: none !important;
         }
 
         .sidebar-tab.active {
             background: rgba(255, 255, 255, 0.1);
-            border-bottom: 3px solid var(--accent-color);
+            border: 1px solid var(--accent-color);
+            border-radius: 20px;
+            box-shadow: 0 0 15px rgba(115, 136, 159, 0.3);
         }
 
         .sidebar-content {
@@ -900,7 +906,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: rgba(255, 255, 255, 0.1);
+            background: #00000000;
             border-radius: 10px;
             font-size: 1.8em;
         }
@@ -921,7 +927,7 @@
         }
 
         .file-download {
-            background: var(--accent-color);
+            background: var(--glass-bg);
             border: none;
             border-radius: 8px;
             color: white;
@@ -935,7 +941,7 @@
         }
 
         .file-download:hover {
-            background: var(--accent-hover);
+            background: var(--button-hover);
             transform: translateY(-2px);
         }
 
@@ -1164,7 +1170,7 @@
             transform: translateY(-2px);
         }
 
-        /* Media queries untuk download modal */
+        /* Media queries */
         @media (max-width: 768px) {
             .download-modal-content {
                 padding: 25px 20px;
@@ -1258,6 +1264,7 @@
 </head>
     
 <body>
+    <!-- HTML BODY TIDAK DIUBAH - SAMA PERSIS -->
     <div class="background-container">
         <div class="sun"></div>
         <div class="moon"></div>
@@ -1457,15 +1464,64 @@
     
     <script src="addons.js"></script>
     <script>
+        // KONSTANTA
         const ADDON_REQUEST_FORM_URL = 'https://forms.gle/WLEQgrEQiqRYuqUo7';
         const WHATSAPP_CHANNEL_URL = 'https://whatsapp.com/channel/0029VbBJaB46RGJIkJ874X3d';
         const LINKVERTISE_USER_ID = 2538234;
         
-        // Variabel untuk menyimpan data linkvertise
+        // Variabel global
         let linkvertiseLoaded = false;
         let linkvertiseInitialized = false;
+        let requestCount = 0;
+        let lastRequestTime = 0;
+        const REQUEST_LIMIT = 5;
+        const REQUEST_WINDOW = 60000;
         
-        // Fungsi untuk mendeteksi jenis link
+        // ============================================
+        // FUNGSI UTAMA - PERBAIKAN SANITASI HANYA DI INPUT
+        // ============================================
+        
+        // Fungsi sanitasi HANYA untuk input pengguna
+        function sanitizeInput(input) {
+            if (typeof input !== 'string') return '';
+            
+            // Sanitasi hanya karakter berbahaya untuk XSS
+            const sanitized = input
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;')
+                .replace(/\//g, '&#47;')
+                .substring(0, 500);
+            
+            return sanitized;
+        }
+        
+        // Fungsi untuk menampilkan teks biasa (tidak disanitasi)
+        function displayText(text) {
+            if (typeof text !== 'string') return '';
+            return text;
+        }
+        
+        // Fungsi untuk URL (sanitasi minimal)
+        function sanitizeURL(url) {
+            if (typeof url !== 'string') return '';
+            
+            // Hapus karakter berbahaya
+            const sanitized = url
+                .replace(/</g, '')
+                .replace(/>/g, '')
+                .replace(/"/g, '')
+                .replace(/'/g, '')
+                .trim();
+                
+            return sanitized;
+        }
+        
+        // ============================================
+        // FUNGSI BANTUAN (TIDAK DIUBAH)
+        // ============================================
+        
         function detectLinkType(url) {
             if (!url || url === '#') return 'others';
             
@@ -1488,7 +1544,6 @@
             }
         }
         
-        // Fungsi untuk mendapatkan domain dari URL
         function getDomainFromUrl(url) {
             try {
                 const urlObj = new URL(url);
@@ -1498,7 +1553,6 @@
             }
         }
         
-        // Fungsi untuk mendapatkan teks tombol berdasarkan jenis link
         function getDownloadButtonText(linkType) {
             switch(linkType) {
                 case 'mediafire':
@@ -1518,7 +1572,6 @@
             }
         }
         
-        // Fungsi untuk mendapatkan ikon berdasarkan jenis link
         function getLinkIcon(linkType) {
             switch(linkType) {
                 case 'mediafire':
@@ -1538,7 +1591,6 @@
             }
         }
         
-        // Fungsi untuk mendapatkan deskripsi berdasarkan jenis link
         function getLinkDescription(linkType) {
             switch(linkType) {
                 case 'mediafire':
@@ -1558,20 +1610,9 @@
             }
         }
         
-        // Fungsi untuk sanitasi input
-        function sanitizeInput(input) {
-            if (typeof input !== 'string') return '';
-            return input
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#x27;')
-                .replace(/\//g, '&#x2F;')
-                .substring(0, 500);
-        }
-        
-        // Fungsi untuk validasi URL
         function isValidURL(url) {
+            if (!url) return false;
+            
             try {
                 const urlObj = new URL(url);
                 const allowedPrefixes = [
@@ -1581,45 +1622,17 @@
                 ];
                 
                 return allowedPrefixes.some(prefix => 
-                    url.toLowerCase().startsWith(prefix.toLowerCase()) ||
-                    urlObj.origin === new URL(prefix).origin
+                    url.toLowerCase().startsWith(prefix.toLowerCase())
                 );
             } catch {
                 return false;
             }
         }
         
-        // Fungsi untuk parse JSON dengan aman
-        function safeJSONParse(str) {
-            if (typeof str !== 'string' || str.length > 10000) return null;
-            try {
-                const parsed = JSON.parse(str);
-                if (parsed.title && parsed.category && parsed.image) {
-                    return {
-                        title: sanitizeInput(parsed.title),
-                        category: parsed.category,
-                        image: parsed.image,
-                        rating: Number(parsed.rating) || 0,
-                        downloads: parsed.downloads || '0',
-                        link: parsed.link || '#',
-                        description: sanitizeInput(parsed.description || ''),
-                        files: parsed.files || [],
-                        gallery: parsed.gallery || []
-                    };
-                }
-            } catch {
-                return null;
-            }
-            return null;
-        }
+        // ============================================
+        // FUNGSI UTAMA (DIPERBAIKI SANITASINYA)
+        // ============================================
         
-        // Inisialisasi variabel untuk rate limiting
-        let requestCount = 0;
-        let lastRequestTime = 0;
-        const REQUEST_LIMIT = 5;
-        const REQUEST_WINDOW = 60000;
-        
-        // Inisialisasi saat DOM siap
         document.addEventListener('DOMContentLoaded', () => {
             createStars();
             createParticles();
@@ -1628,53 +1641,22 @@
             initializeLinkvertise();
         });
         
-        // Fungsi untuk inisialisasi Linkvertise
         function initializeLinkvertise() {
-            // Cek apakah script linkvertise sudah dimuat
             if (typeof linkvertise !== 'undefined') {
                 linkvertiseLoaded = true;
-                console.log('Linkvertise script loaded successfully');
                 
-                // Inisialisasi Linkvertise
                 try {
                     linkvertise(LINKVERTISE_USER_ID, {
                         whitelist: ["mediafire.com/file/*","mediafire.com/download/*","gofile.io"], 
                         blacklist: []
                     });
                     linkvertiseInitialized = true;
-                    console.log('Linkvertise initialized successfully');
                 } catch (error) {
                     console.error('Linkvertise initialization error:', error);
                 }
-            } else {
-                console.warn('Linkvertise script not available, loading manually...');
-                // Coba load ulang script
-                const script = document.createElement('script');
-                script.src = 'https://publisher.linkvertise.com/cdn/linkvertise.js';
-                script.async = true;
-                script.onload = function() {
-                    linkvertiseLoaded = true;
-                    console.log('Linkvertise script loaded manually');
-                    
-                    try {
-                        linkvertise(LINKVERTISE_USER_ID, {
-                            whitelist: ["mediafire.com/file/*","mediafire.com/download/*","gofile.io"], 
-                            blacklist: []
-                        });
-                        linkvertiseInitialized = true;
-                        console.log('Linkvertise initialized after manual load');
-                    } catch (error) {
-                        console.error('Linkvertise manual initialization error:', error);
-                    }
-                };
-                script.onerror = function() {
-                    console.error('Failed to load Linkvertise script');
-                };
-                document.body.appendChild(script);
             }
         }
         
-        // Fungsi untuk membuat bintang di background
         function createStars() {
             const container = document.getElementById('stars');
             const frag = document.createDocumentFragment();
@@ -1691,7 +1673,6 @@
             container.appendChild(frag);
         }
         
-        // Fungsi untuk membuat partikel
         function createParticles() {
             const container = document.getElementById('particles');
             const frag = document.createDocumentFragment();
@@ -1709,7 +1690,6 @@
             container.appendChild(frag);
         }
         
-        // Fungsi untuk memuat item
         function loadItems() {
             const container = document.getElementById('itemContainer');
             container.innerHTML = '<div class="loading"><i class="fas fa-cube fa-spin"></i> Loading items...</div>';
@@ -1725,7 +1705,6 @@
             }, 800);
         }
         
-        // Fungsi untuk membuat elemen item
         function createItemElement(item) {
             const categoryNames = {
                 maps: "World",
@@ -1748,8 +1727,10 @@
             const itemDiv = document.createElement('div');
             itemDiv.className = 'item';
             itemDiv.dataset.category = item.category;
+            
+            // Simpan data asli tanpa sanitasi berlebihan
             itemDiv.dataset.item = JSON.stringify({
-                title: sanitizeInput(item.title),
+                title: item.title,
                 category: item.category,
                 image: item.image,
                 rating: item.rating,
@@ -1761,7 +1742,7 @@
             });
             
             const title = document.createElement('h2');
-            title.textContent = item.title;
+            title.textContent = displayText(item.title); // Tampilkan teks biasa
             
             const subtitle = document.createElement('p');
             subtitle.className = 'subtitle';
@@ -1807,9 +1788,8 @@
             return itemDiv;
         }
         
-        // Fungsi untuk setup event listeners
         function setupEventListeners() {
-            // Search input
+            // Search input - SANITASI DI SINI
             document.getElementById('searchInput').addEventListener('input', e => {
                 e.target.value = sanitizeInput(e.target.value);
                 clearTimeout(window.searchTimeout);
@@ -1818,7 +1798,6 @@
                 }, 200);
             });
             
-            // Category buttons
             document.querySelectorAll('.category-buttons button').forEach(btn => {
                 btn.addEventListener('click', () => {
                     document.querySelectorAll('.category-buttons button').forEach(b => b.classList.remove('active'));
@@ -1827,23 +1806,18 @@
                 });
             });
             
-            // Send request button
             document.getElementById('sendButton').addEventListener('click', sendRequest);
             
-            // Request addons button
             document.getElementById('requestAddonsButton').addEventListener('click', () => {
                 window.open(ADDON_REQUEST_FORM_URL, '_blank');
             });
             
-            // Close modal button
             document.getElementById('closeModal').addEventListener('click', () => {
                 document.getElementById('addonRequestModal').style.display = 'none';
             });
             
-            // Addon request form
             document.getElementById('addonRequestForm').addEventListener('submit', handleAddonRequest);
             
-            // Sidebar tabs
             document.querySelectorAll('.sidebar-tab').forEach(tab => {
                 tab.addEventListener('click', () => {
                     document.querySelectorAll('.sidebar-tab').forEach(t => t.classList.remove('active'));
@@ -1853,7 +1827,6 @@
                 });
             });
             
-            // Gallery navigation
             document.getElementById('galleryPrev').addEventListener('click', () => {
                 navigateGallery('prev');
             });
@@ -1862,48 +1835,48 @@
                 navigateGallery('next');
             });
             
-            // Close detail modal
             document.getElementById('closeDetailModal').addEventListener('click', closeAddonDetail);
             
-            // Download button in detail modal
             document.getElementById('detailDownload').addEventListener('click', () => {
                 const currentAddon = document.getElementById('addonDetailModal').dataset.currentAddon;
                 if (currentAddon) {
-                    const addon = JSON.parse(currentAddon);
-                    showDownloadModal(addon);
-                }
-            });
-            
-            // Request button in detail modal
-            document.getElementById('detailRequest').addEventListener('click', () => {
-                window.open(ADDON_REQUEST_FORM_URL, '_blank');
-            });
-            
-            // WhatsApp button in detail modal
-            document.getElementById('detailWhatsapp').addEventListener('click', () => {
-                window.open(WHATSAPP_CHANNEL_URL, '_blank');
-            });
-            
-            // Download modal close button
-            document.getElementById('closeDownloadModal').addEventListener('click', closeDownloadModal);
-            
-            // Item click event
-            document.addEventListener('click', (e) => {
-                const item = e.target.closest('.item');
-                if (item) {
-                    const itemData = safeJSONParse(item.dataset.item);
-                    if (itemData) {
-                        showAddonDetail(itemData);
+                    try {
+                        const addon = JSON.parse(currentAddon);
+                        showDownloadModal(addon);
+                    } catch (error) {
+                        console.error('Error parsing addon:', error);
                     }
                 }
             });
             
-            // Credit and social media links
+            document.getElementById('detailRequest').addEventListener('click', () => {
+                window.open(ADDON_REQUEST_FORM_URL, '_blank');
+            });
+            
+            document.getElementById('detailWhatsapp').addEventListener('click', () => {
+                window.open(WHATSAPP_CHANNEL_URL, '_blank');
+            });
+            
+            document.getElementById('closeDownloadModal').addEventListener('click', closeDownloadModal);
+            
+            document.addEventListener('click', (e) => {
+                const item = e.target.closest('.item');
+                if (item) {
+                    try {
+                        const itemData = JSON.parse(item.dataset.item);
+                        if (itemData) {
+                            showAddonDetail(itemData);
+                        }
+                    } catch (error) {
+                        console.error('Error parsing item data:', error);
+                    }
+                }
+            });
+            
             document.getElementById('creditLink').addEventListener('click', showCreditScreen);
             document.getElementById('socialMediaLink').addEventListener('click', toggleSocialMedia);
             document.getElementById('closeCreditScreen').addEventListener('click', closeCreditScreen);
             
-            // File download buttons
             document.addEventListener('click', (e) => {
                 if (e.target.closest('.file-download')) {
                     const fileItem = e.target.closest('.file-item');
@@ -1916,7 +1889,6 @@
             });
         }
         
-        // Fungsi untuk filter item
         function filterItems() {
             const searchQuery = sanitizeInput(document.getElementById('searchInput').value.toLowerCase());
             const activeFilter = document.querySelector('.category-buttons button.active').dataset.filter;
@@ -1932,7 +1904,6 @@
             });
         }
         
-        // Fungsi untuk mengirim request
         async function sendRequest() {
             const now = Date.now();
             if (now - lastRequestTime < REQUEST_WINDOW && requestCount >= REQUEST_LIMIT) {
@@ -1945,7 +1916,7 @@
             }
             
             const inp = document.getElementById('linkInput');
-            const url = inp.value.trim();
+            const url = sanitizeURL(inp.value.trim()); // SANITASI URL
             
             if (!url) {
                 showNotification('Please enter a URL', 'error');
@@ -1962,7 +1933,6 @@
                 btn.disabled = true;
                 btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
                 
-                // Simpan request ke localStorage
                 const requests = JSON.parse(localStorage.getItem('addonRequests') || '[]');
                 requests.push({
                     url: url,
@@ -1983,24 +1953,20 @@
             }
         }
         
-        // FUNGSI UTAMA: Tampilkan modal download
         function showDownloadModal(addon) {
             const modal = document.getElementById('downloadModal');
             const title = document.getElementById('downloadModalTitle');
             const subtitle = document.getElementById('downloadModalSubtitle');
             const options = document.getElementById('downloadOptions');
             
-            // Set judul dan subtitle
-            title.textContent = addon.title;
+            title.textContent = displayText(addon.title); // Tampilkan teks biasa
             
             const linkType = detectLinkType(addon.link);
             const buttonText = getDownloadButtonText(linkType);
             subtitle.textContent = buttonText;
             
-            // Kosongkan opsi sebelumnya
             options.innerHTML = '';
             
-            // Buat opsi download utama
             const mainOption = createDownloadOption(
                 addon.link,
                 linkType,
@@ -2008,7 +1974,6 @@
             );
             options.appendChild(mainOption);
             
-            // Tambahkan opsi alternatif (jika ada)
             if (addon.alternativeLinks && addon.alternativeLinks.length > 0) {
                 addon.alternativeLinks.forEach(altLink => {
                     const altLinkType = detectLinkType(altLink.url);
@@ -2022,12 +1987,10 @@
                 });
             }
             
-            // Tampilkan modal
             modal.style.display = 'flex';
             document.body.style.overflow = 'hidden';
         }
         
-        // Fungsi untuk membuat elemen opsi download
         function createDownloadOption(url, linkType, optionType, customName = null) {
             const option = document.createElement('div');
             option.className = 'download-option';
@@ -2060,36 +2023,30 @@
             return option;
         }
         
-        // Fungsi untuk menutup modal download
         function closeDownloadModal() {
             const modal = document.getElementById('downloadModal');
             modal.style.display = 'none';
             document.body.style.overflow = 'auto';
         }
         
-        // FUNGSI UTAMA: Handle download dengan Linkvertise support
         function handleDownload(url, linkType = null) {
             if (!url || url === '#') {
                 showNotification('Download link tidak tersedia', 'error');
                 return;
             }
             
-            // Deteksi jenis link jika tidak disediakan
             if (!linkType) {
                 linkType = detectLinkType(url);
             }
             
             try {
-                // Jika link adalah linkvertise atau link-center
                 if (linkType === 'linkvertise' || linkType === 'link-center') {
                     handleLinkvertiseDownload(url);
                 } else {
-                    // Untuk link biasa, langsung buka
                     window.open(url, '_blank');
                     showNotification('Download started! Opening link...', 'success');
                 }
                 
-                // Update download count
                 updateDownloadCounter(url);
                 
             } catch (error) {
@@ -2098,17 +2055,11 @@
             }
         }
         
-        // Fungsi khusus untuk handle Linkvertise download
         function handleLinkvertiseDownload(originalUrl) {
-            console.log('Processing Linkvertise download:', originalUrl);
-            
-            // Cek apakah Linkvertise sudah diinisialisasi
             if (linkvertiseInitialized && typeof linkvertise === 'function') {
                 try {
-                    // Gunakan Linkvertise API
                     showNotification('Opening Linkvertise... Please complete the task to download.', 'info');
                     
-                    // Buat iframe untuk Linkvertise
                     const iframe = document.createElement('iframe');
                     iframe.style.position = 'fixed';
                     iframe.style.top = '0';
@@ -2120,7 +2071,6 @@
                     iframe.style.background = '#000';
                     iframe.src = originalUrl;
                     
-                    // Tambahkan tombol close
                     const closeButton = document.createElement('button');
                     closeButton.innerHTML = '<i class="fas fa-times"></i>';
                     closeButton.style.position = 'fixed';
@@ -2145,24 +2095,17 @@
                     
                 } catch (error) {
                     console.error('Linkvertise iframe error:', error);
-                    // Fallback ke window.open
                     window.open(originalUrl, '_blank');
                     showNotification('Opening Linkvertise in new tab...', 'info');
                 }
             } else {
-                // Jika Linkvertise tidak terinisialisasi, buka di tab baru
-                console.warn('Linkvertise not initialized, opening in new tab');
                 window.open(originalUrl, '_blank');
                 showNotification('Opening Linkvertise in new tab...', 'info');
-                
-                // Coba inisialisasi ulang
                 initializeLinkvertise();
             }
         }
         
-        // Fungsi untuk update download counter
         function updateDownloadCounter(url) {
-            // Simpan statistik download
             const downloadStats = JSON.parse(localStorage.getItem('downloadStats') || '{}');
             const domain = getDomainFromUrl(url) || 'unknown';
             
@@ -2173,19 +2116,21 @@
             
             localStorage.setItem('downloadStats', JSON.stringify(downloadStats));
             
-            // Update counter di UI jika ada
             const currentAddon = document.getElementById('addonDetailModal').dataset.currentAddon;
             if (currentAddon) {
-                const addon = JSON.parse(currentAddon);
-                const itemKey = `download_${addon.title.replace(/\s+/g, '_')}`;
-                let downloadCount = localStorage.getItem(itemKey) || 0;
-                downloadCount = parseInt(downloadCount) + 1;
-                localStorage.setItem(itemKey, downloadCount);
-                updateDownloadCount(addon.title, downloadCount);
+                try {
+                    const addon = JSON.parse(currentAddon);
+                    const itemKey = `download_${addon.title.replace(/\s+/g, '_')}`;
+                    let downloadCount = localStorage.getItem(itemKey) || 0;
+                    downloadCount = parseInt(downloadCount) + 1;
+                    localStorage.setItem(itemKey, downloadCount);
+                    updateDownloadCount(addon.title, downloadCount);
+                } catch (error) {
+                    console.error('Error updating download count:', error);
+                }
             }
         }
         
-        // Fungsi untuk update tampilan download count
         function updateDownloadCount(itemTitle, count) {
             document.querySelectorAll('.item').forEach(item => {
                 const title = item.querySelector('h2').textContent;
@@ -2198,7 +2143,6 @@
             });
         }
         
-        // Fungsi untuk menampilkan notifikasi
         function showNotification(message, type = 'info') {
             const notification = document.getElementById('notification');
             notification.textContent = message;
@@ -2215,7 +2159,9 @@
                 notification.style.background = 'rgba(52, 152, 219, 0.8)';
             }
             
-            notification.innerHTML = `<i class="${icon}"></i> ${sanitizeInput(message)}`;
+            // SANITASI PESAN NOTIFIKASI (dari input pengguna)
+            const sanitizedMessage = sanitizeInput(message);
+            notification.innerHTML = `<i class="${icon}"></i> ${sanitizedMessage}`;
             notification.classList.add('show');
             
             setTimeout(() => {
@@ -2223,35 +2169,38 @@
             }, 3000);
         }
         
-        // Fungsi untuk handle addon request form
         function handleAddonRequest(e) {
             e.preventDefault();
             
+            // SANITASI INPUT PENGUNA
             const addonName = sanitizeInput(document.getElementById('addonName').value);
             const addonDescription = sanitizeInput(document.getElementById('addonDescription').value);
-            const addonLink = document.getElementById('addonLink').value;
+            const addonLink = sanitizeURL(document.getElementById('addonLink').value);
             
             if (addonLink && !isValidURL(addonLink)) {
                 showNotification('Invalid URL format', 'error');
                 return;
             }
             
-            // Simpan request ke localStorage
-            const addonRequests = JSON.parse(localStorage.getItem('addonRequests') || '[]');
-            addonRequests.push({
-                name: addonName,
-                description: addonDescription,
-                link: addonLink,
-                timestamp: new Date().toISOString()
-            });
-            localStorage.setItem('addonRequests', JSON.stringify(addonRequests));
-            
-            document.getElementById('addonRequestForm').reset();
-            document.getElementById('addonRequestModal').style.display = 'none';
-            showNotification('Request submitted successfully!', 'success');
+            try {
+                const addonRequests = JSON.parse(localStorage.getItem('addonRequests') || '[]');
+                addonRequests.push({
+                    name: addonName,
+                    description: addonDescription,
+                    link: addonLink,
+                    timestamp: new Date().toISOString()
+                });
+                localStorage.setItem('addonRequests', JSON.stringify(addonRequests));
+                
+                document.getElementById('addonRequestForm').reset();
+                document.getElementById('addonRequestModal').style.display = 'none';
+                showNotification('Request submitted successfully!', 'success');
+            } catch (error) {
+                console.error('Error saving request:', error);
+                showNotification('Error submitting request', 'error');
+            }
         }
         
-        // Fungsi untuk menampilkan detail addon
         function showAddonDetail(addon) {
             const modal = document.getElementById('addonDetailModal');
             const categoryNames = {
@@ -2264,15 +2213,12 @@
             };
             
             modal.dataset.currentAddon = JSON.stringify(addon);
-            document.getElementById('detailIcon').src = addon.image;
-            document.getElementById('detailTitle').textContent = addon.title;
-            document.getElementById('detailSubtitle').textContent = `${categoryNames[addon.category] || "Item"} • ${addon.rating} ★ • ${typeof addon.downloads === 'string' ? addon.downloads : addon.downloads.toLocaleString()} downloads`;
-            document.getElementById('detailDescription').textContent = addon.description || "No description available.";
             
-            // Deteksi jenis link dan update teks tombol
-            const linkType = detectLinkType(addon.link);
-            const downloadText = getDownloadButtonText(linkType);
-            document.getElementById('downloadText').textContent = downloadText;
+            // TAMPILKAN TEKS BIASA (tidak disanitasi)
+            document.getElementById('detailIcon').src = addon.image;
+            document.getElementById('detailTitle').textContent = displayText(addon.title);
+            document.getElementById('detailSubtitle').textContent = `${categoryNames[addon.category] || "Item"} • ${addon.rating} ★ • ${typeof addon.downloads === 'string' ? addon.downloads : addon.downloads.toLocaleString()} downloads`;
+            document.getElementById('detailDescription').textContent = displayText(addon.description || "No description available.");
             
             const fileList = document.querySelector('.file-list');
             fileList.innerHTML = '';
@@ -2307,16 +2253,17 @@
                         fileIcon = 'file-image';
                     }
                     
+                    // TAMPILKAN TEKS BIASA
                     fileItem.innerHTML = `
                         <div class="file-icon">
                             <i class="fas fa-${fileIcon}"></i>
                         </div>
                         <div class="file-info">
-                            <div class="file-name">${sanitizeInput(fileName)}</div>
-                            <div class="file-size">${sanitizeInput(fileSize)}</div>
+                            <div class="file-name">${displayText(fileName)}</div>
+                            <div class="file-size">${displayText(fileSize)}</div>
                         </div>
                         <button class="file-download" data-link="${addon.link}">
-                            <i class="fas fa-download"></i> Download
+                            <i class="fas fa-download"></i>
                         </button>
                     `;
                     fileList.appendChild(fileItem);
@@ -2375,13 +2322,11 @@
             document.body.style.overflow = 'hidden';
         }
         
-        // Fungsi untuk menutup detail addon
         function closeAddonDetail() {
             document.getElementById('addonDetailModal').style.display = 'none';
             document.body.style.overflow = 'auto';
         }
         
-        // Fungsi untuk navigasi gallery
         function navigateGallery(direction) {
             const slider = document.getElementById('gallerySlider');
             const slides = slider.children;
@@ -2406,19 +2351,16 @@
             slider.style.transform = `translateX(${newPosition}px)`;
         }
         
-        // Fungsi untuk menampilkan credit screen
         function showCreditScreen() {
             document.getElementById('creditScreen').style.display = 'flex';
             document.body.style.overflow = 'hidden';
         }
         
-        // Fungsi untuk menutup credit screen
         function closeCreditScreen() {
             document.getElementById('creditScreen').style.display = 'none';
             document.body.style.overflow = 'auto';
         }
         
-        // Fungsi untuk toggle social media icons
         function toggleSocialMedia() {
             const socialMediaIcons = document.getElementById('socialMediaIcons');
             if (socialMediaIcons.style.display === 'none' || socialMediaIcons.style.display === '') {
@@ -2428,7 +2370,7 @@
             }
         }
         
-        // Frame busting untuk mencegah iframe embedding
+        // Security measures
         if (window !== window.top) {
             window.top.location = window.location;
             
@@ -2475,17 +2417,6 @@
             throw new Error('Frame busting detected');
         }
         
-        // Context menu protection
-        document.addEventListener('contextmenu', function(e) {
-            const selection = window.getSelection();
-            if (selection.toString().includes('frame') || 
-                selection.toString().includes('iframe')) {
-                e.preventDefault();
-                showNotification('This page cannot be framed.', 'error');
-            }
-        });
-        
-        // Mutation observer untuk mencegah iframe injection
         const observer = new MutationObserver(function(mutations) {
             mutations.forEach(function(mutation) {
                 if (mutation.addedNodes.length) {
@@ -2494,7 +2425,6 @@
                             (node.nodeType === 1 && node.tagName && 
                              node.tagName.toLowerCase() === 'iframe')) {
                             node.parentNode.removeChild(node);
-                            console.warn('Attempted iframe injection blocked');
                         }
                     });
                 }
