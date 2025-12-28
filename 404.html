@@ -5,19 +5,24 @@
     <meta content="width=device-width, initial-scale=1" name="viewport"/>
     <meta http-equiv="Content-Security-Policy" 
       content="default-src 'self'; 
-               script-src 'self' 'unsafe-inline'; 
-               style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; 
-               font-src 'self' https://fonts.gstatic.com data:; 
-               img-src 'self' data:; 
+               script-src 'self'; 
+               style-src 'self'; 
+               font-src 'self'; 
+               img-src 'self'; 
                connect-src 'self'; 
                frame-ancestors 'none'; 
                base-uri 'self'; 
                form-action 'self'; 
-               object-src 'none';">
+               object-src 'none';
+               child-src 'none';
+               worker-src 'none';
+               manifest-src 'none';
+               prefetch-src 'none';
+               navigate-to 'self'">
     <meta http-equiv="X-Frame-Options" content="DENY">
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
-    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
-    <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=()">
+    <meta http-equiv="Referrer-Policy" content="no-referrer">
+    <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=(), display-capture=()">
     <title>404 - Page Not Found</title>
     <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;700&amp;display=swap" rel="stylesheet"/>
     <style>
@@ -489,9 +494,21 @@
                 font-size: 3.5em;
             }
         }
+
+        .screen-protector {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            pointer-events: none;
+        }
     </style>
 </head>
 <body>
+    <div class="screen-protector" id="screenProtector"></div>
+    
     <div class="background-container">
         <div class="sun"></div>
         <div class="moon"></div>
@@ -518,18 +535,18 @@
         <div class="error-search-container">
             <div class="error-search-wrapper">
                 <input type="text" id="errorSearchInput" placeholder="Cari sesuatu di situs ini...">
-                <button onclick="handleErrorSearch()">
+                <button id="searchButton">
                     <i class="fas fa-search"></i>
                 </button>
             </div>
         </div>
         
         <div class="error-actions">
-            <a href="https://bloxarynid.github.io/Minepack" class="error-button home">
+            <a href="https://bloxarynid.github.io/MinePack" class="error-button home" id="homeButton">
                 <i class="fas fa-home"></i>
                 <span>Kembali ke MinePack</span>
             </a>
-            <button onclick="goBack()" class="error-button back">
+            <button class="error-button back" id="backButton">
                 <i class="fas fa-arrow-left"></i>
                 <span>Kembali ke Halaman Sebelumnya</span>
             </button>
@@ -544,20 +561,236 @@
     
     <footer>
         <div class="footer-links">
-            <a href="https://bloxarynid.github.io/Minepack" class="footer-link">Beranda</a>
-            <span class="footer-link" onclick="showHelp()">Bantuan</span>
+            <a href="https://bloxarynid.github.io/MinePack" class="footer-link" id="homeLink">Beranda</a>
+            <span class="footer-link" id="helpLink">Bantuan</span>
         </div>
         <div><i class="far fa-copyright"></i> 2024 - Semua hak dilindungi</div>
     </footer>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        const blockedUrls = [
+            'https://bloxarynid.github.io/MinePack/addons.js',
+            'addons.js',
+            'https://bloxarynid.github.io/MinePack/addons.js',
+            '/addons.js',
+            './addons.js',
+            '//bloxarynid.github.io/MinePack/addons.js'
+        ];
+
+        const blockedKeywords = [
+            'addons.js',
+            '1000095244.jpg',
+            '2bioxarymid.github.io',
+            'link.hub.net',
+            'linkhertista.com',
+            'media.forgecdn.net'
+        ];
+
+        function checkAndBlockRequests() {
+            const originalFetch = window.fetch;
+            window.fetch = function(input, init) {
+                const url = typeof input === 'string' ? input : input.url;
+                
+                if (url && isBlockedUrl(url)) {
+                    console.log('Blocked fetch request to:', url);
+                    return Promise.reject(new Error('Blocked by security policy'));
+                }
+                
+                return originalFetch.call(this, input, init);
+            };
+
+            const originalXHROpen = XMLHttpRequest.prototype.open;
+            XMLHttpRequest.prototype.open = function(method, url, async, user, password) {
+                if (url && isBlockedUrl(url)) {
+                    console.log('Blocked XHR request to:', url);
+                    this._blocked = true;
+                    return;
+                }
+                
+                return originalXHROpen.apply(this, arguments);
+            };
+
+            XMLHttpRequest.prototype.send = function(data) {
+                if (this._blocked) {
+                    console.log('Blocked XHR send to blocked URL');
+                    return;
+                }
+                
+                return XMLHttpRequest.prototype.send.apply(this, arguments);
+            };
+
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    mutation.addedNodes.forEach(function(node) {
+                        if (node.nodeName === 'SCRIPT' || node.nodeName === 'LINK' || node.nodeName === 'IMG') {
+                            const src = node.src || node.href;
+                            if (src && isBlockedUrl(src)) {
+                                console.log('Blocked resource:', src, node);
+                                node.parentNode.removeChild(node);
+                            }
+                        }
+                        
+                        if (node.nodeName === 'IFRAME') {
+                            console.log('Blocked iframe');
+                            node.parentNode.removeChild(node);
+                        }
+                    });
+                });
+            });
+
+            observer.observe(document, {
+                childList: true,
+                subtree: true
+            });
+
+            document.addEventListener('securitypolicyviolation', function(e) {
+                console.log('CSP Violation:', e);
+            });
+        }
+
+        function isBlockedUrl(url) {
+            const lowerUrl = url.toLowerCase();
+            
+            for (const blockedUrl of blockedUrls) {
+                if (lowerUrl.includes(blockedUrl.toLowerCase())) {
+                    return true;
+                }
+            }
+            
+            for (const keyword of blockedKeywords) {
+                if (lowerUrl.includes(keyword.toLowerCase())) {
+                    return true;
+                }
+            }
+            
+            const urlObj = new URL(url, window.location.href);
+            const pathname = urlObj.pathname.toLowerCase();
+            
+            if (pathname.includes('addons.js') || 
+                pathname.includes('1000095244') ||
+                pathname.includes('2bioxarymid')) {
+                return true;
+            }
+            
+            return false;
+        }
+
+        function preventScreenCapture() {
+            const protector = document.getElementById('screenProtector');
+            
+            protector.style.background = 'radial-gradient(circle, transparent 20%, black 70%)';
+            protector.style.animation = 'none';
+            
+            document.addEventListener('keydown', function(e) {
+                if ((e.ctrlKey && (e.key === 's' || e.key === 'p')) || 
+                    (e.key === 'PrintScreen') || 
+                    (e.key === 'F12')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    showSecurityAlert();
+                    return false;
+                }
+            });
+
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                return false;
+            });
+
+            document.addEventListener('dragstart', function(e) {
+                e.preventDefault();
+                return false;
+            });
+
+            document.addEventListener('selectstart', function(e) {
+                e.preventDefault();
+                return false;
+            });
+
+            document.body.style.userSelect = 'none';
+            document.body.style.webkitUserSelect = 'none';
+            document.body.style.mozUserSelect = 'none';
+            document.body.style.msUserSelect = 'none';
+        }
+
+        function showSecurityAlert() {
+            const alertDiv = document.createElement('div');
+            alertDiv.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.9);
+                color: white;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                z-index: 10000;
+                font-family: 'Rubik', sans-serif;
+                text-align: center;
+                padding: 20px;
+            `;
+            
+            alertDiv.innerHTML = `
+                <h1 style="color: #ff6b6b; font-size: 2.5em; margin-bottom: 20px;">
+                    <i class="fas fa-shield-alt"></i> Security Alert
+                </h1>
+                <p style="font-size: 1.2em; max-width: 600px; margin-bottom: 30px;">
+                    Screen capture and developer tools are disabled on this page for security reasons.
+                </p>
+                <button onclick="this.parentElement.remove()" 
+                        style="
+                            padding: 12px 24px;
+                            background: #73889f;
+                            border: none;
+                            border-radius: 8px;
+                            color: white;
+                            font-size: 1.1em;
+                            cursor: pointer;
+                        ">
+                    <i class="fas fa-times"></i> Close
+                </button>
+            `;
+            
+            document.body.appendChild(alertDiv);
+            
+            setTimeout(function() {
+                if (alertDiv.parentNode) {
+                    alertDiv.remove();
+                }
+            }, 3000);
+        }
+
+        function init() {
+            checkAndBlockRequests();
+            preventScreenCapture();
+            
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const blockedParam = urlParams.get('blocked');
+                
+                if (blockedParam === 'addons.js' || blockedParam === '1000095244') {
+                    window.location.replace('https://bloxarynid.github.io/MinePack');
+                    return;
+                }
+            } catch (e) {
+            }
+            
             createStars();
             createParticles();
             updateErrorDetails();
-            setupSearchInput();
-        });
-        
+            setupEventListeners();
+            
+            const currentPath = window.location.pathname;
+            if (currentPath.includes('addons.js') || 
+                currentPath.includes('1000095244') ||
+                currentPath.includes('2bioxarymid')) {
+                window.location.replace('https://bloxarynid.github.io/MinePack');
+            }
+        }
+
         function createStars() {
             const container = document.getElementById('stars');
             const frag = document.createDocumentFragment();
@@ -573,7 +806,7 @@
             }
             container.appendChild(frag);
         }
-        
+
         function createParticles() {
             const container = document.getElementById('particles');
             const frag = document.createDocumentFragment();
@@ -590,7 +823,7 @@
             }
             container.appendChild(frag);
         }
-        
+
         function updateErrorDetails() {
             document.getElementById('currentUrl').textContent = window.location.href;
             
@@ -599,99 +832,161 @@
             const dateString = now.toLocaleDateString();
             document.getElementById('currentTime').textContent = dateString + ' ' + timeString;
         }
-        
-        function setupSearchInput() {
+
+        function setupEventListeners() {
             const searchInput = document.getElementById('errorSearchInput');
+            const searchButton = document.getElementById('searchButton');
+            const backButton = document.getElementById('backButton');
+            const homeButton = document.getElementById('homeButton');
+            const homeLink = document.getElementById('homeLink');
+            const helpLink = document.getElementById('helpLink');
+            
             searchInput.addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
                     handleErrorSearch();
                 }
             });
+            
+            searchButton.addEventListener('click', handleErrorSearch);
+            backButton.addEventListener('click', goBack);
+            homeButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = 'https://bloxarynid.github.io/MinePack';
+            });
+            homeLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = 'https://bloxarynid.github.io/MinePack';
+            });
+            helpLink.addEventListener('click', showHelp);
         }
-        
+
         function handleErrorSearch() {
             const searchQuery = document.getElementById('errorSearchInput').value.trim();
             if (searchQuery) {
-                window.location.href = 'https://bloxarynid.github.io/Minepack?search=' + encodeURIComponent(searchQuery);
+                const safeQuery = searchQuery.replace(/[^a-zA-Z0-9\s]/g, '');
+                window.location.href = 'https://bloxarynid.github.io/MinePack?search=' + encodeURIComponent(safeQuery);
             }
         }
-        
+
         function goBack() {
             if (window.history.length > 1) {
                 window.history.back();
             } else {
-                window.location.href = 'https://bloxarynid.github.io/Minepack';
+                window.location.href = 'https://bloxarynid.github.io/MinePack';
             }
         }
-        
+
         function showHelp() {
-            alert('Jika Anda mengalami masalah, silakan kunjungi halaman utama MinePack di https://bloxarynid.github.io/Minepack');
-        }
-        
-        if (window !== window.top) {
-            window.top.location = window.location;
+            const helpDiv = document.createElement('div');
+            helpDiv.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.8);
+                color: white;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                z-index: 10001;
+                font-family: 'Rubik', sans-serif;
+                text-align: center;
+                padding: 20px;
+            `;
             
-            document.body.innerHTML = `
+            helpDiv.innerHTML = `
                 <div style="
-                    position: fixed;
-                    top: 0;
-                    left: 0;
-                    width: 100%;
-                    height: 100%;
-                    background: #1E3F66;
-                    color: white;
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: center;
-                    align-items: center;
-                    text-align: center;
-                    padding: 20px;
-                    z-index: 9999;
+                    background: var(--glass-bg);
+                    border: 1px solid var(--glass-border);
+                    border-radius: 12px;
+                    padding: 30px;
+                    max-width: 500px;
+                    width: 90%;
                 ">
-                    <h1 style="font-size: 2em; margin-bottom: 20px;">
-                        <i class="fas fa-exclamation-triangle"></i> Access Denied
-                    </h1>
-                    <p style="font-size: 1.2em; max-width: 600px;">
-                        This website cannot be displayed in an iframe or frame.
-                        Please open it directly in your browser.
+                    <h2 style="color: var(--accent-color); margin-bottom: 20px;">
+                        <i class="fas fa-question-circle"></i> Bantuan
+                    </h2>
+                    <p style="margin-bottom: 15px; line-height: 1.6;">
+                        Halaman yang Anda cari tidak ditemukan. Beberapa alasan mungkin:
                     </p>
-                    <button onclick="window.open(window.location.href, '_blank')" 
+                    <ul style="text-align: left; margin-bottom: 20px; padding-left: 20px;">
+                        <li>URL salah atau typo</li>
+                        <li>Halaman telah dihapus atau dipindahkan</li>
+                        <li>File tidak tersedia di server</li>
+                    </ul>
+                    <p style="margin-bottom: 20px;">
+                        Klik "Kembali ke MinePack" untuk kembali ke halaman utama.
+                    </p>
+                    <button onclick="this.parentElement.parentElement.remove()" 
                             style="
-                                margin-top: 30px;
-                                padding: 12px 24px;
-                                background: #73889f;
+                                padding: 10px 20px;
+                                background: var(--accent-color);
                                 border: none;
                                 border-radius: 8px;
                                 color: white;
-                                font-size: 1.1em;
                                 cursor: pointer;
                             ">
-                        <i class="fas fa-external-link-alt"></i> Open in New Tab
+                        <i class="fas fa-times"></i> Tutup
                     </button>
                 </div>
             `;
             
+            document.body.appendChild(helpDiv);
+        }
+
+        if (window !== window.top) {
+            window.top.location = window.location;
+            
+            const blockedPage = document.createElement('div');
+            blockedPage.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: #1E3F66;
+                color: white;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                text-align: center;
+                padding: 20px;
+                z-index: 9999;
+            `;
+            
+            blockedPage.innerHTML = `
+                <h1 style="font-size: 2em; margin-bottom: 20px;">
+                    <i class="fas fa-exclamation-triangle"></i> Access Denied
+                </h1>
+                <p style="font-size: 1.2em; max-width: 600px;">
+                    This website cannot be displayed in an iframe or frame.
+                    Please open it directly in your browser.
+                </p>
+                <button onclick="window.open(window.location.href, '_blank')" 
+                        style="
+                            margin-top: 30px;
+                            padding: 12px 24px;
+                            background: #73889f;
+                            border: none;
+                            border-radius: 8px;
+                            color: white;
+                            font-size: 1.1em;
+                            cursor: pointer;
+                        ">
+                    <i class="fas fa-external-link-alt"></i> Open in New Tab
+                </button>
+            `;
+            
+            document.body.innerHTML = '';
+            document.body.appendChild(blockedPage);
+            
             throw new Error('Frame busting detected');
         }
-        
-        const observer = new MutationObserver(function(mutations) {
-            mutations.forEach(function(mutation) {
-                if (mutation.addedNodes.length) {
-                    mutation.addedNodes.forEach(function(node) {
-                        if (node.nodeName === 'IFRAME' || 
-                            (node.nodeType === 1 && node.tagName && 
-                             node.tagName.toLowerCase() === 'iframe')) {
-                            node.parentNode.removeChild(node);
-                        }
-                    });
-                }
-            });
-        });
-        
-        observer.observe(document.body, {
-            childList: true,
-            subtree: true
-        });
+
+        window.addEventListener('load', init);
     </script>
 </body>
 </html>
