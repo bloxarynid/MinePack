@@ -24,7 +24,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;700&amp;display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
-        /* STYLE TIDAK DIUBAH - SAMA PERSIS DENGAN SEBELUMNYA */
         :root {
             --gradient-colors: linear-gradient(270deg, #05121a, #062538, #0b5c86, #105274, #105274, #0d3d5b, #062538, #05121a);
             --text-color: #fff;
@@ -1028,7 +1027,6 @@
             transform: translateY(-2px);
         }
 
-        /* Download Modal Styles */
         .download-modal {
             display: none;
             position: fixed;
@@ -1169,7 +1167,6 @@
             transform: translateY(-2px);
         }
 
-        /* Media queries */
         @media (max-width: 768px) {
             .download-modal-content {
                 padding: 25px 20px;
@@ -1263,7 +1260,14 @@
 </head>
     
 <body>
-    <!-- HTML BODY TIDAK DIUBAH - SAMA PERSIS -->
+  
+  <script type="text/javascript">
+    var go_url = 'https://sfl.gl/';
+    var api = '544376a72f462a4a982bf07232425ebbca9a18b7';
+    var shorten_includ = ["https://www.mediafire.com/"];
+</script>
+<script src="//safelinku.com/js/web-script.js"></script>
+
     <div class="background-container">
         <div class="sun"></div>
         <div class="moon"></div>
@@ -1278,7 +1282,6 @@
     <div class="particles" id="particles"></div>
     <div class="notification" id="notification"></div>
     
-    <!-- Download Modal -->
     <div id="downloadModal" class="download-modal">
         <div class="download-modal-content">
             <div class="download-modal-header">
@@ -1288,7 +1291,6 @@
             </div>
             
             <div class="download-options" id="downloadOptions">
-                <!-- Opsi download akan diisi oleh JavaScript -->
             </div>
             
             <div class="download-modal-footer">
@@ -1331,7 +1333,6 @@
     
     <main>
         <div class="grid-container" id="itemContainer">
-            <!-- Items will be loaded here -->
         </div>
     </main>
     
@@ -1458,17 +1459,14 @@
         <div><i class="far fa-copyright"></i> @Bloxaryn. 2025</div>
     </footer>
     
-    <!-- Load Linkvertise Script -->
     <script src="https://publisher.linkvertise.com/cdn/linkvertise.js"></script>
     
     <script src="addons.js"></script>
     <script>
-        // KONSTANTA
         const ADDON_REQUEST_FORM_URL = 'https://forms.gle/WLEQgrEQiqRYuqUo7';
         const WHATSAPP_CHANNEL_URL = 'https://whatsapp.com/channel/0029VbBJaB46RGJIkJ874X3d';
         const LINKVERTISE_USER_ID = 2538234;
         
-        // Variabel global
         let linkvertiseLoaded = false;
         let linkvertiseInitialized = false;
         let requestCount = 0;
@@ -1476,15 +1474,9 @@
         const REQUEST_LIMIT = 5;
         const REQUEST_WINDOW = 60000;
         
-        // ============================================
-        // FUNGSI UTAMA - PERBAIKAN SANITASI HANYA DI INPUT
-        // ============================================
-        
-        // Fungsi sanitasi HANYA untuk input pengguna
         function sanitizeInput(input) {
             if (typeof input !== 'string') return '';
             
-            // Sanitasi hanya karakter berbahaya untuk XSS
             const sanitized = input
                 .replace(/</g, '&lt;')
                 .replace(/>/g, '&gt;')
@@ -1496,17 +1488,14 @@
             return sanitized;
         }
         
-        // Fungsi untuk menampilkan teks biasa (tidak disanitasi)
         function displayText(text) {
             if (typeof text !== 'string') return '';
             return text;
         }
         
-        // Fungsi untuk URL (sanitasi minimal)
         function sanitizeURL(url) {
             if (typeof url !== 'string') return '';
             
-            // Hapus karakter berbahaya
             const sanitized = url
                 .replace(/</g, '')
                 .replace(/>/g, '')
@@ -1516,10 +1505,6 @@
                 
             return sanitized;
         }
-        
-        // ============================================
-        // FUNGSI BANTUAN (TIDAK DIUBAH)
-        // ============================================
         
         function detectLinkType(url) {
             if (!url || url === '#') return 'others';
@@ -1628,10 +1613,6 @@
             }
         }
         
-        // ============================================
-        // FUNGSI UTAMA (DIPERBAIKI SANITASINYA)
-        // ============================================
-        
         document.addEventListener('DOMContentLoaded', () => {
             createStars();
             createParticles();
@@ -1727,7 +1708,6 @@
             itemDiv.className = 'item';
             itemDiv.dataset.category = item.category;
             
-            // Simpan data asli tanpa sanitasi berlebihan
             itemDiv.dataset.item = JSON.stringify({
                 title: item.title,
                 category: item.category,
@@ -1741,7 +1721,7 @@
             });
             
             const title = document.createElement('h2');
-            title.textContent = displayText(item.title); // Tampilkan teks biasa
+            title.textContent = displayText(item.title); 
             
             const subtitle = document.createElement('p');
             subtitle.className = 'subtitle';
@@ -1788,7 +1768,6 @@
         }
         
         function setupEventListeners() {
-            // Search input - SANITASI DI SINI
             document.getElementById('searchInput').addEventListener('input', e => {
                 e.target.value = sanitizeInput(e.target.value);
                 clearTimeout(window.searchTimeout);
@@ -1915,7 +1894,7 @@
             }
             
             const inp = document.getElementById('linkInput');
-            const url = sanitizeURL(inp.value.trim()); // SANITASI URL
+            const url = sanitizeURL(inp.value.trim());
             
             if (!url) {
                 showNotification('Please enter a URL', 'error');
@@ -1958,7 +1937,7 @@
             const subtitle = document.getElementById('downloadModalSubtitle');
             const options = document.getElementById('downloadOptions');
             
-            title.textContent = displayText(addon.title); // Tampilkan teks biasa
+            title.textContent = displayText(addon.title);
             
             const linkType = detectLinkType(addon.link);
             const buttonText = getDownloadButtonText(linkType);
@@ -2158,7 +2137,6 @@
                 notification.style.background = 'rgba(52, 152, 219, 0.8)';
             }
             
-            // SANITASI PESAN NOTIFIKASI (dari input pengguna)
             const sanitizedMessage = sanitizeInput(message);
             notification.innerHTML = `<i class="${icon}"></i> ${sanitizedMessage}`;
             notification.classList.add('show');
@@ -2171,7 +2149,6 @@
         function handleAddonRequest(e) {
             e.preventDefault();
             
-            // SANITASI INPUT PENGUNA
             const addonName = sanitizeInput(document.getElementById('addonName').value);
             const addonDescription = sanitizeInput(document.getElementById('addonDescription').value);
             const addonLink = sanitizeURL(document.getElementById('addonLink').value);
@@ -2213,7 +2190,6 @@
             
             modal.dataset.currentAddon = JSON.stringify(addon);
             
-            // TAMPILKAN TEKS BIASA (tidak disanitasi)
             document.getElementById('detailIcon').src = addon.image;
             document.getElementById('detailTitle').textContent = displayText(addon.title);
             document.getElementById('detailSubtitle').textContent = `${categoryNames[addon.category] || "Item"} • ${addon.rating} ★ • ${typeof addon.downloads === 'string' ? addon.downloads : addon.downloads.toLocaleString()} downloads`;
@@ -2251,8 +2227,7 @@
                     } else if (fileName.toLowerCase().endsWith('.jpg') || fileName.toLowerCase().endsWith('.png') || fileName.toLowerCase().endsWith('.jpeg')) {
                         fileIcon = 'file-image';
                     }
-                    
-                    // TAMPILKAN TEKS BIASA
+
                     fileItem.innerHTML = `
                         <div class="file-icon">
                             <i class="fas fa-${fileIcon}"></i>
@@ -2369,7 +2344,6 @@
             }
         }
         
-        // Security measures
         if (window !== window.top) {
             window.top.location = window.location;
             
