@@ -1,14 +1,15 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1" name="viewport"/>
     <meta http-equiv="Content-Security-Policy" 
       content="default-src 'self'; 
                script-src 'self' 'unsafe-inline'; 
-               style-src 'self' 'unsafe-inline'; 
-               font-src 'self' data:; 
-               img-src 'self' data: https:; 
+               style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; 
+               font-src 'self' https://fonts.gstatic.com data:; 
+               img-src 'self' data:; 
+               connect-src 'self'; 
                frame-ancestors 'none'; 
                base-uri 'self'; 
                form-action 'self'; 
@@ -17,10 +18,9 @@
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
     <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=()">
-    <title>404 - Security Blocked | MinePack</title>
-    <link rel="icon" href="icon.jpg" type="image/png">
+    <title>404 - Page Not Found</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;700&amp;display=swap" rel="stylesheet"/>
     <style>
-        /* STYLE SAMA PERSIS DENGAN WEBSITE UTAMA */
         :root {
             --gradient-colors: linear-gradient(270deg, #05121a, #062538, #0b5c86, #105274, #105274, #0d3d5b, #062538, #05121a);
             --text-color: #fff;
@@ -32,8 +32,6 @@
             --accent-hover: #384758;
             --success-color: #729669;
             --success-hover: #394237;
-            --danger-color: #ff0033;
-            --danger-hover: #cc0029;
         }
 
         * {
@@ -50,6 +48,11 @@
             padding: 20px;
             min-height: 100vh;
             position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
         }
 
         .background-container {
@@ -153,28 +156,6 @@
             100% { transform: translateX(-100px); }
         }
 
-        .stars {
-            position: fixed;
-            width: 100vw;
-            height: 100vh;
-            top: 0;
-            left: 0;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        .star {
-            position: absolute;
-            background: rgba(255,255,255,0.8);
-            border-radius: 50%;
-            animation: twinkle var(--anim-dur) ease-in-out infinite;
-        }
-
-        @keyframes twinkle {
-            0%,100% { opacity: 0.3; }
-            50% { opacity: 1; }
-        }
-
         .particles {
             position: fixed;
             top: 0;
@@ -216,313 +197,196 @@
             }
         }
 
-        /* STYLE KHUSUS 404 PAGE */
-        .security-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: calc(100vh - 40px);
-            text-align: center;
-            padding: 40px 20px;
-            position: relative;
-            z-index: 2;
-        }
-
-        .security-header {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: 12px 12px 0 0;
-            padding: 25px;
-            width: 100%;
-            max-width: 800px;
-            backdrop-filter: blur(10px);
-            border-bottom: none;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        }
-
-        .terminal-dots {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            justify-content: center;
-        }
-
-        .dot {
-            width: 15px;
-            height: 15px;
-            border-radius: 50%;
-        }
-
-        .dot-red { 
-            background: var(--danger-color); 
-            box-shadow: 0 0 10px var(--danger-color);
-            animation: pulseRed 2s infinite;
-        }
-
-        .dot-yellow { 
-            background: #ffff00; 
-            box-shadow: 0 0 10px #ffff00;
-            animation: pulseYellow 2s infinite 0.5s;
-        }
-
-        .dot-green { 
-            background: #00ff00; 
-            box-shadow: 0 0 10px #00ff00;
-            animation: pulseGreen 2s infinite 1s;
-        }
-
-        @keyframes pulseRed {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        @keyframes pulseYellow {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        @keyframes pulseGreen {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        .security-body {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: 0 0 12px 12px;
-            padding: 50px 30px;
-            width: 100%;
-            max-width: 800px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .security-body::before {
-            content: '';
-            position: absolute;
+        .stars {
+            position: fixed;
+            width: 100vw;
+            height: 100vh;
             top: 0;
             left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, 
-                transparent, 
-                var(--danger-color), 
-                #ffff00, 
-                var(--danger-color), 
-                transparent);
-            animation: scanLine 3s linear infinite;
+            pointer-events: none;
+            z-index: 1;
         }
 
-        @keyframes scanLine {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
+        .star {
+            position: absolute;
+            background: rgba(255,255,255,0.8);
+            border-radius: 50%;
+            animation: twinkle var(--anim-dur) ease-in-out infinite;
+        }
+
+        @keyframes twinkle {
+            0%,100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        .error-container {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 50px 40px;
+            max-width: 600px;
+            width: 90%;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            z-index: 2;
+            position: relative;
+            margin: 20px;
         }
 
         .error-code {
             font-size: 8em;
-            font-weight: 900;
-            background: linear-gradient(45deg, var(--danger-color), #ffff00, var(--danger-color));
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 0 30px rgba(255,255,255,0.5);
+            background: linear-gradient(45deg, #FFD700, #FFA500, #87CEEB);
             -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             background-clip: text;
-            color: transparent;
-            margin-bottom: 20px;
-            text-shadow: 0 0 30px rgba(255, 0, 51, 0.5);
-            letter-spacing: 5px;
-            animation: glitch 0.5s infinite;
         }
 
-        @keyframes glitch {
-            0% { transform: translate(0); }
-            20% { transform: translate(-2px, 2px); }
-            40% { transform: translate(-2px, -2px); }
-            60% { transform: translate(2px, 2px); }
-            80% { transform: translate(2px, -2px); }
-            100% { transform: translate(0); }
-        }
-
-        .security-title {
+        .error-title {
             font-size: 2.5em;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             color: var(--text-color);
-            text-transform: uppercase;
-            letter-spacing: 3px;
+            text-shadow: 0 0 15px rgba(255,255,255,0.3);
         }
 
-        .security-message {
+        .error-message {
             font-size: 1.2em;
-            line-height: 1.8;
-            margin-bottom: 40px;
             color: #ccc;
-            max-width: 600px;
+            margin-bottom: 40px;
+            line-height: 1.6;
+            max-width: 500px;
             margin-left: auto;
             margin-right: auto;
         }
 
-        .warning-box {
-            background: rgba(255, 0, 51, 0.1);
-            border: 1px solid var(--danger-color);
-            border-radius: 8px;
-            padding: 25px;
-            margin: 30px auto;
-            max-width: 600px;
-            text-align: left;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .warning-box::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: repeating-linear-gradient(
-                0deg,
-                transparent,
-                transparent 2px,
-                rgba(255, 0, 51, 0.1) 2px,
-                rgba(255, 0, 51, 0.1) 4px
-            );
-            animation: scanWarning 10s linear infinite;
-        }
-
-        @keyframes scanWarning {
-            0% { transform: translateY(0); }
-            100% { transform: translateY(100px); }
-        }
-
-        .warning-title {
-            color: var(--danger-color);
-            font-size: 1.3em;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .warning-list {
-            list-style: none;
-            padding-left: 0;
-        }
-
-        .warning-list li {
-            margin-bottom: 10px;
-            padding-left: 25px;
-            position: relative;
-            color: #ff9999;
-        }
-
-        .warning-list li::before {
-            content: '⚠️';
-            position: absolute;
-            left: 0;
-            top: 0;
-        }
-
-        .access-log {
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid var(--glass-border);
-            border-radius: 8px;
-            padding: 20px;
-            margin: 30px auto;
-            max-width: 600px;
-            text-align: left;
-            font-family: 'Courier New', monospace;
-            font-size: 0.9em;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-
-        .log-entry {
-            color: #888;
-            margin-bottom: 5px;
-            padding: 5px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .log-entry.alert {
-            color: var(--danger-color);
-            animation: blink 1s infinite;
-        }
-
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        .button-container {
+        .error-actions {
             display: flex;
             gap: 20px;
-            margin-top: 40px;
-            flex-wrap: wrap;
             justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 30px;
         }
 
-        .security-button {
+        .error-button {
+            display: flex;
+            align-items: center;
+            gap: 12px;
             background: var(--button-bg);
             border: 1px solid var(--glass-border);
-            border-radius: 8px;
+            border-radius: 12px;
             color: var(--text-color);
-            padding: 15px 30px;
+            padding: 18px 30px;
             font-size: 1.1em;
             cursor: pointer;
             transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 10px;
             text-decoration: none;
-            min-width: 200px;
+            font-family: 'Rubik', sans-serif;
+            min-width: 180px;
             justify-content: center;
         }
 
-        .security-button:hover {
+        .error-button:hover {
             background: var(--button-hover);
             transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
         }
 
-        .security-button.primary {
+        .error-button.home {
             background: var(--accent-color);
-            border-color: var(--accent-color);
         }
 
-        .security-button.primary:hover {
+        .error-button.home:hover {
             background: var(--accent-hover);
         }
 
-        .security-button.danger {
-            background: var(--danger-color);
-            border-color: var(--danger-color);
+        .error-button.back {
+            background: var(--success-color);
         }
 
-        .security-button.danger:hover {
-            background: var(--danger-hover);
+        .error-button.back:hover {
+            background: var(--success-hover);
         }
 
-        .hacker-text {
-            font-family: 'Courier New', monospace;
-            color: #00ff00;
-            text-shadow: 0 0 10px #00ff00;
-            margin: 20px 0;
-            padding: 10px;
-            background: rgba(0, 255, 0, 0.1);
-            border-radius: 5px;
-            border: 1px solid rgba(0, 255, 0, 0.3);
-        }
-
-        .matrix-effect {
-            position: fixed;
-            top: 0;
-            left: 0;
+        .error-search-container {
+            margin: 30px 0;
+            max-width: 500px;
             width: 100%;
-            height: 100%;
-            z-index: -1;
-            opacity: 0.1;
-            pointer-events: none;
+        }
+
+        .error-search-wrapper {
+            display: flex;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 8px;
+            transition: transform 0.3s ease;
+            width: 100%;
+        }
+
+        .error-search-wrapper:hover {
+            transform: translateY(-2px);
+        }
+
+        .error-search-wrapper input {
+            flex-grow: 1;
+            padding: 12px 18px;
+            font-size: 1em;
+            border: none;
+            background: transparent;
+            color: var(--text-color);
+            font-family: 'Rubik', sans-serif;
+        }
+
+        .error-search-wrapper button {
+            width: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--button-bg);
+            color: var(--text-color);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.2em;
+        }
+
+        .error-search-wrapper button:hover {
+            background: var(--button-hover);
+            transform: scale(1.05);
+        }
+
+        .error-details {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 1px solid var(--glass-border);
+            color: #aaa;
+            font-size: 0.9em;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .error-details code {
+            background: rgba(0,0,0,0.3);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            color: #FFD700;
+        }
+
+        .floating-icon {
+            font-size: 5em;
+            margin-bottom: 30px;
+            animation: floatIcon 3s ease-in-out infinite;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        @keyframes floatIcon {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(10deg); }
         }
 
         footer {
@@ -531,29 +395,52 @@
             font-size: 0.9em;
             color: #bbb;
             z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            max-width: 600px;
+            padding: 20px;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 10px;
+        }
+
+        .footer-link {
+            color: #bbb;
+            text-decoration: none;
+            transition: color 0.3s ease;
+            cursor: pointer;
+        }
+
+        .footer-link:hover {
+            color: var(--accent-color);
         }
 
         @media (max-width: 768px) {
             .error-code {
-                font-size: 5em;
+                font-size: 6em;
             }
             
-            .security-title {
-                font-size: 1.8em;
+            .error-title {
+                font-size: 2em;
             }
             
-            .security-message {
+            .error-container {
+                padding: 40px 25px;
+            }
+            
+            .error-button {
+                padding: 15px 20px;
+                min-width: 150px;
                 font-size: 1em;
             }
             
-            .button-container {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .security-button {
-                width: 100%;
-                max-width: 300px;
+            .error-actions {
+                gap: 15px;
             }
             
             .sun {
@@ -574,11 +461,37 @@
                 width: 80px;
                 height: 40px;
             }
+            
+            .floating-icon {
+                font-size: 4em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .error-code {
+                font-size: 4.5em;
+            }
+            
+            .error-title {
+                font-size: 1.7em;
+            }
+            
+            .error-button {
+                width: 100%;
+                min-width: auto;
+            }
+            
+            .error-actions {
+                flex-direction: column;
+            }
+            
+            .floating-icon {
+                font-size: 3.5em;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Background elements sama dengan website utama -->
     <div class="background-container">
         <div class="sun"></div>
         <div class="moon"></div>
@@ -591,84 +504,59 @@
     
     <div class="stars" id="stars"></div>
     <div class="particles" id="particles"></div>
-    <canvas class="matrix-effect" id="matrixCanvas"></canvas>
     
-    <div class="security-container">
-        <div class="security-header">
-            <div class="terminal-dots">
-                <div class="dot dot-red"></div>
-                <div class="dot dot-yellow"></div>
-                <div class="dot dot-green"></div>
+    <div class="error-container">
+        <div class="floating-icon">!</div>
+        <div class="error-code">404</div>
+        <h1 class="error-title">Halaman Tidak Ditemukan</h1>
+        
+        <p class="error-message">
+            Maaf, halaman yang Anda cari tidak ada atau telah dipindahkan.
+            Periksa kembali URL atau gunakan pencarian untuk menemukan konten yang Anda inginkan.
+        </p>
+        
+        <div class="error-search-container">
+            <div class="error-search-wrapper">
+                <input type="text" id="errorSearchInput" placeholder="Cari sesuatu di situs ini...">
+                <button onclick="handleErrorSearch()">
+                    <i class="fas fa-search"></i>
+                </button>
             </div>
-            <div class="security-title">SYSTEM SECURITY :: ACTIVATED</div>
         </div>
         
-        <div class="security-body">
-            <div class="error-code">404</div>
-            
-            <h1 class="security-title">
-                <i class="fas fa-shield-alt"></i> ACCESS DENIED
-            </h1>
-            
-            <div class="security-message">
-                <p>🚫 <strong>Security has been activated!</strong></p>
-                <p>You cannot retrieve the source-code from here!</p>
-                <p class="hacker-text">[SYSTEM] Unauthorized access attempt detected and blocked</p>
-            </div>
-            
-            <div class="warning-box">
-                <div class="warning-title">
-                    <i class="fas fa-exclamation-triangle"></i> WARNING: SECURITY BREACH ATTEMPT
-                </div>
-                <ul class="warning-list">
-                    <li>Attempt to access protected resource detected</li>
-                    <li>Source IP has been logged and reported</li>
-                    <li>All download links are secured with encryption</li>
-                    <li>Reverse engineering attempts are monitored</li>
-                    <li>Violators will be permanently banned</li>
-                </ul>
-            </div>
-            
-            <div class="access-log" id="accessLog">
-                <div class="log-entry">[SYSTEM] Security initialized...</div>
-                <div class="log-entry">[FIREWALL] All ports secured...</div>
-                <div class="log-entry">[MONITOR] Scanning for threats...</div>
-                <div class="log-entry alert">[ALERT] Unauthorized access detected!</div>
-                <div class="log-entry alert">[ALERT] Target: <span id="blockedPath"></span></div>
-                <div class="log-entry alert">[ALERT] Source: <span id="blockedIP">Unknown origin</span></div>
-                <div class="log-entry">[ACTION] Connection terminated...</div>
-                <div class="log-entry">[ACTION] IP Address blacklisted...</div>
-                <div class="log-entry">[ACTION] Security protocols engaged...</div>
-                <div class="log-entry">[SYSTEM] Returning to safety...</div>
-            </div>
-            
-            <div class="security-message">
-                <p>This page serves as a security measure to protect sensitive data and source code.</p>
-                <p>All direct access to internal files is strictly prohibited.</p>
-            </div>
-            
-            <div class="button-container">
-                <a href="https://bloxarynid.github.io/MinePack/" class="security-button primary">
-                    <i class="fas fa-home"></i> Return to Homepage
-                </a>
-                <button class="security-button" onclick="showTechnicalDetails()">
-                    <i class="fas fa-info-circle"></i> Technical Details
-                </button>
-                <button class="security-button danger" onclick="initiateLockdown()">
-                    <i class="fas fa-lock"></i> Initiate Lockdown
-                </button>
-            </div>
+        <div class="error-actions">
+            <a href="https://bloxarynid.github.io/Minepack" class="error-button home">
+                <i class="fas fa-home"></i>
+                <span>Kembali ke MinePack</span>
+            </a>
+            <button onclick="goBack()" class="error-button back">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali ke Halaman Sebelumnya</span>
+            </button>
+        </div>
+        
+        <div class="error-details">
+            <p>URL yang diminta: <code id="currentUrl"></code></p>
+            <p>Kode error: <code>404 Not Found</code></p>
+            <p>Waktu akses: <code id="currentTime"></code></p>
         </div>
     </div>
     
     <footer>
-        <div><i class="far fa-copyright"></i> @Bloxaryn. 2025 | Security Response System</div>
+        <div class="footer-links">
+            <a href="https://bloxarynid.github.io/Minepack" class="footer-link">Beranda</a>
+            <span class="footer-link" onclick="showHelp()">Bantuan</span>
+        </div>
+        <div><i class="far fa-copyright"></i> 2024 - Semua hak dilindungi</div>
     </footer>
 
     <script>
-        // ============================================
-        // INISIALISASI ELEMEN BACKGROUND
-        // ============================================
+        document.addEventListener('DOMContentLoaded', function() {
+            createStars();
+            createParticles();
+            updateErrorDetails();
+            setupSearchInput();
+        });
         
         function createStars() {
             const container = document.getElementById('stars');
@@ -677,10 +565,10 @@
                 const s = document.createElement('div');
                 s.className = 'star';
                 const size = Math.random() * 2 + 1;
-                s.style.width = s.style.height = `${size}px`;
-                s.style.left = `${Math.random() * 100}%`;
-                s.style.top = `${Math.random() * 100}%`;
-                s.style.setProperty('--anim-dur', `${Math.random() * 3 + 2}s`);
+                s.style.width = s.style.height = size + 'px';
+                s.style.left = Math.random() * 100 + '%';
+                s.style.top = Math.random() * 100 + '%';
+                s.style.setProperty('--anim-dur', (Math.random() * 3 + 2) + 's');
                 frag.appendChild(s);
             }
             container.appendChild(frag);
@@ -693,282 +581,106 @@
                 const p = document.createElement('div');
                 p.className = 'particle';
                 const size = Math.random() * 20 + 5;
-                p.style.width = p.style.height = `${size}px`;
-                p.style.left = `${Math.random() * 100}%`;
-                p.style.top = `${Math.random() * 100}%`;
-                p.style.animationDelay = `${Math.random() * 5}s`;
-                p.style.animationDuration = `${Math.random() * 10 + 10}s`;
+                p.style.width = p.style.height = size + 'px';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.top = Math.random() * 100 + '%';
+                p.style.animationDelay = Math.random() * 5 + 's';
+                p.style.animationDuration = Math.random() * 10 + 10 + 's';
                 frag.appendChild(p);
             }
             container.appendChild(frag);
         }
         
-        // ============================================
-        // MATRIX RAIN EFFECT
-        // ============================================
+        function updateErrorDetails() {
+            document.getElementById('currentUrl').textContent = window.location.href;
+            
+            const now = new Date();
+            const timeString = now.toLocaleTimeString();
+            const dateString = now.toLocaleDateString();
+            document.getElementById('currentTime').textContent = dateString + ' ' + timeString;
+        }
         
-        function initMatrixEffect() {
-            const canvas = document.getElementById('matrixCanvas');
-            const ctx = canvas.getContext('2d');
-            
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            
-            const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#$%&@*";
-            const charArray = chars.split("");
-            const fontSize = 14;
-            const columns = canvas.width / fontSize;
-            const drops = [];
-            
-            for(let i = 0; i < columns; i++) {
-                drops[i] = Math.floor(Math.random() * canvas.height);
-            }
-            
-            function drawMatrix() {
-                ctx.fillStyle = "rgba(10, 10, 10, 0.04)";
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                
-                ctx.fillStyle = "#00ff00";
-                ctx.font = fontSize + "px monospace";
-                
-                for(let i = 0; i < drops.length; i++) {
-                    const text = charArray[Math.floor(Math.random() * charArray.length)];
-                    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-                    
-                    if(drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-                        drops[i] = 0;
-                    }
-                    drops[i]++;
+        function setupSearchInput() {
+            const searchInput = document.getElementById('errorSearchInput');
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    handleErrorSearch();
                 }
-            }
-            
-            setInterval(drawMatrix, 35);
-            
-            window.addEventListener('resize', function() {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
             });
         }
         
-        // ============================================
-        // DETEKSI DAN LOGGING
-        // ============================================
-        
-        function detectAndLogAccess() {
-            const blockedPath = window.location.pathname;
-            const blockedElement = document.getElementById('blockedPath');
-            
-            // Tampilkan path yang diblokir
-            if (blockedElement) {
-                blockedElement.textContent = blockedPath;
+        function handleErrorSearch() {
+            const searchQuery = document.getElementById('errorSearchInput').value.trim();
+            if (searchQuery) {
+                window.location.href = 'https://bloxarynid.github.io/Minepack?search=' + encodeURIComponent(searchQuery);
             }
-            
-            // Simpan log akses
-            const accessLog = {
-                path: blockedPath,
-                timestamp: new Date().toISOString(),
-                userAgent: navigator.userAgent,
-                referrer: document.referrer
-            };
-            
-            // Simpan ke localStorage
-            try {
-                const securityLogs = JSON.parse(localStorage.getItem('securityLogs') || '[]');
-                securityLogs.push(accessLog);
-                localStorage.setItem('securityLogs', JSON.stringify(securityLogs.slice(-100))); // Simpan 100 log terakhir
-            } catch (e) {
-                console.error('Error saving security log:', e);
-            }
-            
-            // Tambahkan log entry baru setiap 3 detik
-            const logEntries = [
-                "[ENCRYPTION] Data streams secured...",
-                "[SCANNER] No vulnerabilities found...",
-                "[BACKUP] Secure backup in progress...",
-                "[AUTH] All authentication systems: OK",
-                "[NETWORK] Firewall status: ACTIVE",
-                "[MONITOR] Surveillance active on all ports",
-                "[ALERT] Multiple access attempts blocked",
-                "[SECURITY] Threat level: ELEVATED",
-                "[SYSTEM] Anti-leech protection: ACTIVE",
-                "[ENCRYPTION] File integrity verified",
-                "[MONITOR] Unusual activity detected",
-                "[SECURITY] Source code protection: ACTIVE"
-            ];
-            
-            let logIndex = 0;
-            setInterval(() => {
-                const logContainer = document.getElementById('accessLog');
-                if (logContainer) {
-                    const randomLog = logEntries[Math.floor(Math.random() * logEntries.length)];
-                    const logEntry = document.createElement('div');
-                    logEntry.className = 'log-entry';
-                    logEntry.textContent = randomLog;
-                    logContainer.appendChild(logEntry);
-                    logContainer.scrollTop = logContainer.scrollHeight;
-                    logIndex++;
-                    
-                    // Hapus log lama jika terlalu banyak
-                    if (logContainer.children.length > 15) {
-                        logContainer.removeChild(logContainer.firstChild);
-                    }
-                }
-            }, 3000);
         }
         
-        // ============================================
-        // FUNGSI TOMBOL
-        // ============================================
+        function goBack() {
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                window.location.href = 'https://bloxarynid.github.io/Minepack';
+            }
+        }
         
-        function showTechnicalDetails() {
-            const details = `
-                Technical Security Details:
-                
-                🔒 Security Measures Activated:
-                • X-Frame-Options: DENY
-                • Content-Security-Policy: Active
-                • X-Content-Type-Options: nosniff
-                • Referrer-Policy: strict-origin-when-cross-origin
-                • Frame Busting: Enabled
-                • Source Code Protection: Active
-                • Anti-Leech Protection: Enabled
-                
-                📍 Blocked Access:
-                Path: ${window.location.pathname}
-                Timestamp: ${new Date().toLocaleString()}
-                
-                ⚠️ Warning:
-                Direct access to source files is prohibited.
-                All violations are logged and monitored.
+        function showHelp() {
+            alert('Jika Anda mengalami masalah, silakan kunjungi halaman utama MinePack di https://bloxarynid.github.io/Minepack');
+        }
+        
+        if (window !== window.top) {
+            window.top.location = window.location;
+            
+            document.body.innerHTML = `
+                <div style="
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: #1E3F66;
+                    color: white;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+                    text-align: center;
+                    padding: 20px;
+                    z-index: 9999;
+                ">
+                    <h1 style="font-size: 2em; margin-bottom: 20px;">
+                        <i class="fas fa-exclamation-triangle"></i> Access Denied
+                    </h1>
+                    <p style="font-size: 1.2em; max-width: 600px;">
+                        This website cannot be displayed in an iframe or frame.
+                        Please open it directly in your browser.
+                    </p>
+                    <button onclick="window.open(window.location.href, '_blank')" 
+                            style="
+                                margin-top: 30px;
+                                padding: 12px 24px;
+                                background: #73889f;
+                                border: none;
+                                border-radius: 8px;
+                                color: white;
+                                font-size: 1.1em;
+                                cursor: pointer;
+                            ">
+                        <i class="fas fa-external-link-alt"></i> Open in New Tab
+                    </button>
+                </div>
             `;
             
-            alert(details);
+            throw new Error('Frame busting detected');
         }
         
-        function initiateLockdown() {
-            const buttons = document.querySelectorAll('.security-button');
-            buttons.forEach(btn => {
-                btn.disabled = true;
-                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> LOCKDOWN ACTIVE';
-            });
-            
-            // Ubah background menjadi merah darurat
-            document.body.style.animation = 'none';
-            setTimeout(() => {
-                document.body.style.backgroundColor = '#220000';
-                document.querySelector('.security-body').style.backgroundColor = 'rgba(40, 0, 0, 0.95)';
-                document.querySelector('.security-body').style.borderColor = '#ff0033';
-            }, 10);
-            
-            // Tambahkan log lockdown
-            const logContainer = document.getElementById('accessLog');
-            const lockdownLogs = [
-                "[EMERGENCY] LOCKDOWN INITIATED",
-                "[EMERGENCY] All systems: OFFLINE",
-                "[EMERGENCY] Encryption: MAXIMUM",
-                "[EMERGENCY] Data channels: CLOSED",
-                "[EMERGENCY] Awaiting admin authorization..."
-            ];
-            
-            lockdownLogs.forEach((log, index) => {
-                setTimeout(() => {
-                    const logEntry = document.createElement('div');
-                    logEntry.className = 'log-entry alert';
-                    logEntry.textContent = log;
-                    logContainer.appendChild(logEntry);
-                    logContainer.scrollTop = logContainer.scrollHeight;
-                }, index * 500);
-            });
-            
-            // Kembalikan normal setelah 5 detik
-            setTimeout(() => {
-                buttons.forEach(btn => {
-                    btn.disabled = false;
-                    if (btn.classList.contains('danger')) {
-                        btn.innerHTML = '<i class="fas fa-lock"></i> Lockdown Complete';
-                    }
-                });
-                
-                setTimeout(() => {
-                    document.body.style.backgroundColor = '';
-                    document.querySelector('.security-body').style.backgroundColor = '';
-                    document.querySelector('.security-body').style.borderColor = '';
-                    
-                    if (document.querySelector('.security-button.danger')) {
-                        document.querySelector('.security-button.danger').innerHTML = '<i class="fas fa-lock"></i> Initiate Lockdown';
-                    }
-                }, 2000);
-            }, 5000);
-        }
-        
-        // ============================================
-        // FUNGSI UTAMA
-        // ============================================
-        
-        document.addEventListener('DOMContentLoaded', () => {
-            createStars();
-            createParticles();
-            initMatrixEffect();
-            detectAndLogAccess();
-            
-            // Frame busting - tambahan keamanan
-            if (window !== window.top) {
-                window.top.location = window.location;
-            }
-            
-            // Hapus semua parameter URL
-            if (window.location.search || window.location.hash) {
-                window.history.replaceState({}, document.title, window.location.pathname);
-            }
-            
-            // Log browser info (anonim)
-            console.log('%c🚫 ACCESS DENIED 🚫', 'color: #ff0033; font-size: 20px; font-weight: bold;');
-            console.log('%cSecurity System Activated - This area is restricted.', 'color: #00ff00;');
-        });
-        
-        // Cegah klik kanan dan inspect element
-        document.addEventListener('contextmenu', (e) => {
-            e.preventDefault();
-            const logContainer = document.getElementById('accessLog');
-            if (logContainer) {
-                const logEntry = document.createElement('div');
-                logEntry.className = 'log-entry alert';
-                logEntry.textContent = '[SECURITY] Right-click attempt blocked';
-                logContainer.appendChild(logEntry);
-                logContainer.scrollTop = logContainer.scrollHeight;
-            }
-            return false;
-        });
-        
-        // Cegah keyboard shortcuts untuk developer tools
-        document.addEventListener('keydown', (e) => {
-            // Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C, Ctrl+U, F12
-            if (
-                (e.ctrlKey && e.shiftKey && ['I', 'J', 'C'].includes(e.key)) ||
-                (e.ctrlKey && e.key === 'u') ||
-                e.key === 'F12'
-            ) {
-                e.preventDefault();
-                const logContainer = document.getElementById('accessLog');
-                if (logContainer) {
-                    const logEntry = document.createElement('div');
-                    logEntry.className = 'log-entry alert';
-                    logEntry.textContent = '[SECURITY] Developer tools access attempt blocked';
-                    logContainer.appendChild(logEntry);
-                    logContainer.scrollTop = logContainer.scrollHeight;
-                }
-                return false;
-            }
-        });
-        
-        // Mutation observer untuk mencegah injection
         const observer = new MutationObserver(function(mutations) {
             mutations.forEach(function(mutation) {
                 if (mutation.addedNodes.length) {
                     mutation.addedNodes.forEach(function(node) {
-                        if (node.nodeName === 'SCRIPT' || 
+                        if (node.nodeName === 'IFRAME' || 
                             (node.nodeType === 1 && node.tagName && 
-                             node.tagName.toLowerCase() === 'script')) {
+                             node.tagName.toLowerCase() === 'iframe')) {
                             node.parentNode.removeChild(node);
                         }
                     });
