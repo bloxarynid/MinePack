@@ -1,93 +1,286 @@
 <!DOCTYPE html>
-<!--[if lt IE 7 ]><html class="ie ie6" lang="en"> <![endif]-->
-<!--[if IE 7 ]><html class="ie ie7" lang="en"> <![endif]-->
-<!--[if IE 8 ]><html class="ie ie8" lang="en"> <![endif]-->
-<!--[if (gte IE 9)|!(IE)]><!-->
-<html lang="en"> <!--<![endif]-->
-
+<html lang="id">
 <head>
-    <meta charset="utf-8" />
-    <title>404</title>
-    <meta name="author" content="pkfrom" />
-    <meta name="keywords" content="404 page, css3, template, html5 template" />
-    <meta name="description" content="404 - Page Template" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <!-- Libs CSS -->
-    <link type="text/css" media="all" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" />
-    <link type="text/css" media="all" href="//pkfrom.github.io/404/assets/css/404.min.css" rel="stylesheet" />
-
-    <!-- Favicons -->
-    <link rel="apple-touch-icon" sizes="144x144" href="//pkfrom.github.io/404/assets/img/favicons/favicon144x144.png" />
-    <link rel="apple-touch-icon" sizes="114x114" href="//pkfrom.github.io/404/assets/img/favicons/favicon114x114.png" />
-    <link rel="apple-touch-icon" sizes="72x72" href="//pkfrom.github.io/404/assets/img/favicons/favicon72x72.png" />
-    <link rel="apple-touch-icon" href="//pkfrom.github.io/404/assets/img/favicons/favicon57x57.png" />
-    <link rel="shortcut icon" href="//pkfrom.github.io/404/assets/img/favicons/favicon.png" />
-    <!-- Google Fonts -->
-    <link href='http://fonts.googleapis.com/css?family=Raleway:300,400,500,600,700,800,900' rel='stylesheet' type='text/css'>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 Error Loading  Page - MinePack</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #f0f0f0;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            padding: 40px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .error-code {
+            font-size: 120px;
+            font-weight: 900;
+            background: linear-gradient(90deg, #ff7e5f, #feb47b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(255, 126, 95, 0.3);
+            line-height: 1;
+            margin-bottom: 10px;
+        }
+        
+        .error-title {
+            font-size: 32px;
+            margin-bottom: 20px;
+            color: #ffcc00;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .error-message {
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            color: #cccccc;
+            max-width: 600px;
+        }
+        
+        .profile-image {
+            width: 180px;
+            height: 180px;
+            margin: 0 auto 25px;
+            border-radius: 50%;
+            overflow: hidden;
+            background: linear-gradient(135deg, #ff7e5f, #feb47b, #ffcc00);
+            padding: 5px;
+            box-shadow: 0 0 30px rgba(255, 204, 0, 0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .profile-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 3px solid #1a1a2e;
+        }
+        
+        .profile-info {
+            margin-bottom: 25px;
+        }
+        
+        .profile-name {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ffcc00;
+            margin-bottom: 5px;
+        }
+        
+        .profile-title {
+            font-size: 16px;
+            color: #feb47b;
+            font-style: italic;
+        }
+        
+        .btn-home {
+            display: inline-block;
+            padding: 15px 40px;
+            background: linear-gradient(90deg, #ff7e5f, #feb47b);
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 50px;
+            box-shadow: 0 5px 15px rgba(255, 126, 95, 0.4);
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        .btn-home:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 126, 95, 0.6);
+            background: linear-gradient(90deg, #ff6b47, #fea05c);
+        }
+        
+        .btn-home:active {
+            transform: translateY(1px);
+            box-shadow: 0 3px 10px rgba(255, 126, 95, 0.4);
+        }
+        
+        .footer {
+            margin-top: 30px;
+            font-size: 14px;
+            color: #888;
+        }
+        
+        .footer a {
+            color: #ffcc00;
+            text-decoration: none;
+        }
+        
+        .developer {
+            color: #feb47b;
+            font-weight: bold;
+        }
+        
+        .minecraft-theme {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .pixel {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: rgba(255, 204, 0, 0.1);
+            border-radius: 2px;
+            animation: float 15s infinite linear;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.7;
+            }
+            90% {
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .error-code {
+                font-size: 80px;
+            }
+            
+            .error-title {
+                font-size: 24px;
+            }
+            
+            .error-message {
+                font-size: 16px;
+            }
+            
+            .profile-image {
+                width: 150px;
+                height: 150px;
+            }
+            
+            .container {
+                padding: 30px 20px;
+                margin: 0 15px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-
-    <!-- Load page -->
-    <div class="animationload">
-        <div class="loader">
+    <div class="minecraft-theme" id="pixel-container"></div>
+    
+    <div class="container">
+        <div class="error-code">404</div>
+        <div class="error-title">Halaman Tidak Ditemukan</div>
+        
+        <div class="profile-image">
+            <img src="https://avatars.githubusercontent.com/u/248623682?v=4" alt="Bloxaryn" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxjaXJjbGUgY3g9IjEwMCIgY3k9IjEwMCIgcj0iOTgiIGZpbGw9InVybCgjcGFpbnQwX2xpbmVhcikiLz4KPHBhdGggZD0iTTEwMCA1MEM4OC41IDUwIDc3LjUgNTMuNSA2OCA2MEM1OC41IDY2LjUgNTEgNzUuNSA0Ni41IDg2QzQyIDk2LjUgNDAgMTA4IDQwIDEyMEM0MCAxMzIgNDIgMTQzLjUgNDYuNSAxNTRDNTEgMTY0LjUgNTguNSAxNzMuNSA2OCAxODBDNzcuNSAxODYuNSA4OC41IDE5MCAxMDAgMTkwQzExMS41IDE5MCAxMjIuNSAxODYuNSAxMzIgMTgwQzE0MS41IDE3My41IDE0OSAxNjQuNSAxNTMuNSAxNTRDMTU4IDE0My41IDE2MCAxMzIgMTYwIDEyMEMxNjAgMTA4IDE1OCA5Ni41IDE1My41IDg2QzE0OSA3NS41IDE0MS41IDY2LjUgMTMyIDYwQzEyMi41IDUzLjUgMTExLjUgNTAgMTAwIDUwWiIgZmlsbD0iIzFFMUUyRSIvPgo8cGF0aCBkPSJNMTAwIDUwQzExMS41IDUwIDEyMi41IDUzLjUgMTMyIDYwQzE0MS41IDY2LjUgMTQ5IDc1LjUgMTUzLjUgODZDMTU4IDk2LjUgMTYwIDEwOCAxNjAgMTIwQzE2MCAxMzIgMTU4IDE0My41IDE1My41IDE1NEMxNDkgMTY0LjUgMTQxLjUgMTczLjUgMTMyIDE4MEMxMjIuNSAxODYuNSAxMTEuNSAxOTAgMTAwIDE5MEM4OC41IDE5MCA3Ny41IDE4Ni41IDY4IDE4MEM1OC41IDE3My41IDUxIDE2NC41IDQ2LjUgMTU0QzQyIDE0My41IDQwIDEzMiA0MCAxMjBDNDAgMTA4IDQyIDk2LjUgNDYuNSA4NkM1MSA3NS41IDU4LjUgNjYuNSA2OCA2MEM3Ny41IDUzLjUgODguNSA1MCAxMDAgNTBNMTAwIDQwQzg2LjUgNDAgNzQgNDQgNjMuNSA1MEM1MyA1NiA0NSA2NSA0MCA3NkMzNSA4NyAzMi41IDEwMCAzMi41IDExM0MzMi41IDEyNiAzNSAxMzkgNDAgMTUwQzQ1IDE2MSA1MyAxNzAgNjMuNSAxNzZDNzQgMTgyIDg2LjUgMTg2IDEwMCAxODZDMTEzLjUgMTg2IDEyNiAxODIgMTM2LjUgMTc2QzE0NyAxNzAgMTU1IDE2MSAxNjAgMTUwQzE2NSAxMzkgMTY3LjUgMTI2IDE2Ny41IDExM0MxNjcuNSAxMDAgMTY1IDg3IDE2MCA3NkMxNTUgNjUgMTQ3IDU2IDEzNi41IDUwQzEyNiA0NCAxMTMuNSA0MCAxMDAgNDBaIiBmaWxsPSIjRkZDNzAwIi8+CjxwYXRoIGQ9Ik0xMTAgMTEwQzExMCAxMTYuNSAxMDYuNSAxMjAgMTAwIDEyMEM5My41IDEyMCA5MCAxMTYuNSA5MCAxMTBDOTAgMTAzLjUgOTMuNSAxMDAgMTAwIDEwMEMxMDYuNSAxMDAgMTEwIDEwMy41IDExMCAxMTBaIiBmaWxsPSIjMUYxRjI3Ii8+CjxwYXRoIGQ9Ik04NS44IDk1Qzk0LjUgODYuMyAxMDYuNSA4NSAxMTQuMiA5Mi43QzEyMS45IDEwMC40IDEyMC42IDExMi40IDExMS45IDEyMS4xQzEwMy4yIDEyOS44IDkxLjIgMTMxLjEgODMuNSAxMjMuNEM3NS44IDExNS43IDc3LjEgMTAzLjcgODUuOCA5NVoiIGZpbGw9IiNGRkM3MDAiLz4KPGRlZnM+CjxsaW5lYXJHcmFkaWVudCBpZD0icGFpbnQwX2xpbmVhciIgeDE9IjEwMCIgeTE9IjAiIHgyPSIxMDAiIHkyPSIyMDAiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KPHN0b3Agc3RvcC1jb2xvcj0iI0ZGQzcwMCIvPgo8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNGRjdFNUUiLz4KPC9saW5lYXJHcmFkaWVudD4KPC9kZWZzPgo8L3N2Zz4K'" />
+        </div>
+        
+        <div class="profile-info">
+            <div class="profile-name">Bloxaryn</div>
+            <div class="profile-title">Developer MinePack</div>
+        </div>
+        
+        <p class="error-message">
+            Ups! Sepertinya halaman yang Anda cari telah berpindah, dihapus, atau tidak pernah ada.
+            Jangan khawatir, Anda bisa kembali ke halaman utama MinePack dengan menekan tombol di bawah.
+        </p>
+        
+        <a href="https://bloxarynid.github.io/MinePack" class="btn-home">
+            <i class="fas fa-home"></i> Kembali ke MinePack
+        </a>
+        
+        <div class="footer">
+            <p>© 2025 MinePack | <span class="developer">Bloxaryn.Id</span> | <a href="https://bloxarynid.github.io/MinePack" target="_blank">bloxarynid.github.io/MinePack</a></p>
         </div>
     </div>
-    <!-- End load page -->
 
-    <!-- Content Wrapper -->
-    <div id="wrapper">
-        <div class="container">
-            <!-- Switcher -->
-            <div class="switcher">
-                <input id="sw" type="checkbox" class="switcher-value">
-                <label for="sw" class="sw_btn"></label>
-                <div class="bg"></div>
-                <div class="text">Turn <span class="text-l">off</span><span class="text-d">on</span><br />the light</div>
-            </div>
-            <!-- End Switcher -->
-
-            <!-- Dark version -->
-            <div id="dark" class="row text-center">
-                <div class="info">
-                    <img src="//pkfrom.github.io/404/assets/img/404-dark.png" alt="404 error" />
-                </div>
-            </div>
-            <!-- End Dark version -->
-
-            <!-- Light version -->
-            <div id="light" class="row text-center">
-                <!-- Info -->
-                <div class="info">
-                    <img src="//pkfrom.github.io/404/assets/img/404-light.gif" alt="404 error" />
-                    <!-- end Rabbit -->
-                    <p>The page you are looking for was moved, removed,<br />
-                        renamed or might never existed.</p>
-                    <a href="http://%domain%/" class="btn">Go Home</a>
-                    <!--<a href="#" class="btn btn-brown">Contact Us</a>-->
-                </div>
-                <!-- end Info -->
-            </div>
-            <!-- End Light version -->
-
-        </div>
-        <!-- end container -->
-    </div>
-    <!-- end Content Wrapper -->
-
-
-    <!-- Scripts -->
-    <script src="https://code.jquery.com/jquery-2.2.0.min.js" type="text/javascript"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" type="text/javascript"></script>
-    <script src="//pkfrom.github.io/404/assets/js/modernizr.custom.js" type="text/javascript"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.nicescroll/3.6.0/jquery.nicescroll.min.js" type="text/javascript"></script>
-    <script src="//pkfrom.github.io/404/assets/js/404.min.js" type="text/javascript"></script>
-
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
-
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const pixelContainer = document.getElementById('pixel-container');
+            const pixelCount = 15;
+            
+            for (let i = 0; i < pixelCount; i++) {
+                const pixel = document.createElement('div');
+                pixel.classList.add('pixel');
+                
+                const left = Math.random() * 100;
+                pixel.style.left = `${left}%`;
+                
+                const size = Math.random() * 15 + 10;
+                pixel.style.width = `${size}px`;
+                pixel.style.height = `${size}px`;
+                
+                const delay = Math.random() * 5;
+                pixel.style.animationDelay = `${delay}s`;
+                
+                const duration = Math.random() * 10 + 10;
+                pixel.style.animationDuration = `${duration}s`;
+                
+                const colors = ['rgba(255, 204, 0, 0.2)', 'rgba(255, 126, 95, 0.2)', 'rgba(254, 180, 123, 0.2)'];
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                pixel.style.backgroundColor = color;
+                
+                pixelContainer.appendChild(pixel);
+            }
+            
+            const profileImg = document.querySelector('.profile-image img');
+            profileImg.addEventListener('error', function() {
+                console.log('Foto profil bloxaryn.jpg tidak ditemukan. Menggunakan placeholder.');
+            });
+        });
+        
+        const button = document.querySelector('.btn-home');
+        button.addEventListener('mouseenter', function() {
+            const icon = this.querySelector('i');
+            icon.style.transform = 'scale(1.2)';
+            icon.style.transition = 'transform 0.2s';
+        });
+        
+        button.addEventListener('mouseleave', function() {
+            const icon = this.querySelector('i');
+            icon.style.transform = 'scale(1)';
+        });
+    </script>
 </body>
 </html>
